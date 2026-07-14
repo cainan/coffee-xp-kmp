@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import org.jetbrains.compose.resources.painterResource
 
 import coffeexp.shared.generated.resources.Res
@@ -22,7 +23,7 @@ import coffeexp.shared.generated.resources.compose_multiplatform
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    CoffeeXpTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
