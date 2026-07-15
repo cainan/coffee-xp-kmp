@@ -25,14 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cso.coffeexp.core.design_system.components.CoffeeXpSearchBar
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.presentation.components.SwipeToDeleteCoffeeBox
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeRoot(
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -47,7 +47,6 @@ fun HomeScreen(
     state: HomeState,
     onAction: (HomeAction) -> Unit,
 ) {
-
     // Manage query state
     var query by rememberSaveable { mutableStateOf("") }
 

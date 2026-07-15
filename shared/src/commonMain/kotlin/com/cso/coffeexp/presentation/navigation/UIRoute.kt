@@ -1,4 +1,11 @@
 package com.cso.coffeexp.presentation.navigation
 
-class UIRoute {
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed interface UIRoute {
+
+    @Serializable
+    data object Home : UIRoute
+
 }
