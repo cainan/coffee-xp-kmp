@@ -27,18 +27,32 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cso.coffeexp.core.design_system.components.CoffeeXpSearchBar
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
+import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.presentation.components.SwipeToDeleteCoffeeBox
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeRoot(
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    onNewCoffeeClick: () -> Unit,
+    onDetailsClick: (Long) -> Unit,
 ) {
+    val logger: CoffeeXpLogger = koinInject()
+
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     HomeScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            logger.debug("Action received: $action")
+            when (action) {
+                is HomeAction.OnNewCoffeeClick -> onNewCoffeeClick()
+                is HomeAction.OnDetailsClick -> onDetailsClick(action.coffeeId)
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
     )
 }
 
@@ -71,7 +85,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-//                onClickonNavigateToDetails(null)
+                onAction(HomeAction.OnNewCoffeeClick)
             }) {
                 Icon(Icons.Filled.Add, contentDescription = "Add new coffee")
             }
@@ -104,7 +118,9 @@ fun HomeScreen(
 //                            onEvent(HomeEvent.OnRemoveCoffee(it))
                         },
                         onClick = { coffee ->
-//                            onNavigateToDetails(coffee.id)
+                            coffee.id?.let { coffeeId ->
+                                onAction(HomeAction.OnDetailsClick(coffeeId))
+                            }
                         },
                         modifier = Modifier.animateItem()
                     )

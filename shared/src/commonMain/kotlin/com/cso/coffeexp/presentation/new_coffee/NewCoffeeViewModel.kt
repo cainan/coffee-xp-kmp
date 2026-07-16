@@ -1,20 +1,17 @@
-package com.cso.coffeexp.presentation.home
+package com.cso.coffeexp.presentation.new_coffee
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
-class HomeViewModel(
-    private val logger: CoffeeXpLogger
-) : ViewModel() {
+class NewCoffeeViewModel : ViewModel() {
 
     private var hasLoadedInitialData = false
 
-    private val _state = MutableStateFlow(HomeState())
+    private val _state = MutableStateFlow(NewCoffeeState())
     val state = _state
         .onStart {
             if (!hasLoadedInitialData) {
@@ -25,13 +22,12 @@ class HomeViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = HomeState()
+            initialValue = NewCoffeeState()
         )
 
-    fun onAction(action: HomeAction) {
-        logger.debug("${this.toString()} - action received")
+    fun onAction(action: NewCoffeeAction) {
         when (action) {
-            else -> Unit
+            else -> TODO("Handle actions")
         }
     }
 
