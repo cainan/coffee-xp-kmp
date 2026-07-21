@@ -22,6 +22,7 @@ room-version = "2.7.2"
 coil-version = "3.3.0"
 material-icons = "1.7.3"
 kermit = "2.1.0"
+kotlinx-datetime = "0.6.1"
 
 
 [libraries]
@@ -46,6 +47,7 @@ kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-s
 jetbrains-compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }
 jetbrains-compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room-version" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room-version" }

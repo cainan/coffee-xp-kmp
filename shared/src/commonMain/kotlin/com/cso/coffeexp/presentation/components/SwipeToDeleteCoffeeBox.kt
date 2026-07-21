@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
+import com.cso.coffeexp.domain.mock.mockCoffee
 import com.cso.coffeexp.domain.model.Coffee
 
 @Composable
@@ -73,7 +74,7 @@ fun SwipeToDeleteCoffeeBox(
 fun SwipeToDeleteCoffeePreview() {
     CoffeeXpTheme {
         SwipeToDeleteCoffeeBox(
-            coffee = Coffee(name = "Espresso"),
+            coffee = mockCoffee,
             onToggleDone = {},
             onRemove = {},
             onClick = {}

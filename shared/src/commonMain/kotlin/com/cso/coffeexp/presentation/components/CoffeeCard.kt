@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.cso.coffeexp.domain.mock.mockCoffeeList
 import com.cso.coffeexp.domain.model.Coffee
 
 @Composable
@@ -67,12 +68,12 @@ fun CoffeeCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Method: ${coffee.method}",
+                    text = "Method: ${coffee.brewingMethod}",
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Grade: ${coffee.grade} / 5.0", // Assuming grade is out of 5
+                    text = "Rating: ${coffee.rating} / 10.0",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -86,31 +87,8 @@ fun CoffeeCard(
 fun CoffeeCardPreview() {
     MaterialTheme {
         CoffeeCard(
-            coffee = mockCoffeeData.first(),
+            coffee = mockCoffeeList.first(),
             modifier = Modifier.padding(16.dp)
         )
     }
 }
-
-val mockCoffeeData = listOf(
-    Coffee(
-        id = 1,
-        name = "Ethiopian Yirgacheffe",
-        method = "Chemex",
-        grade = 4.8f,
-        imageUrl = "https://picsum.photos/seed/yirgacheffe/400/300"
-    ),
-    Coffee(
-        id = 2,
-        name = "Colombian Supremo",
-        method = "French Press",
-        grade = 4.5f,
-        imageUrl = "https://picsum.photos/seed/supremo/400/300"
-    ),
-    Coffee(
-        id = 3,
-        name = "Brazilian Santos",
-        method = "Espresso",
-        grade = 4.2f
-    )
-)
