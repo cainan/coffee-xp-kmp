@@ -2,6 +2,7 @@ package com.cso.coffeexp.presentation.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,24 +12,32 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cso.coffeexp.core.design_system.components.CoffeeXpSearchBar
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.presentation.components.SwipeToDeleteCoffeeBox
+import org.jetbrains.compose.resources.stringResource
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.app_name
+import coffeexp.shared.generated.resources.cd_add_new_coffee
+import coffeexp.shared.generated.resources.cd_more_options
+import coffeexp.shared.generated.resources.cd_search
+import coffeexp.shared.generated.resources.home_empty_state
+import coffeexp.shared.generated.resources.home_my_brews
+import coffeexp.shared.generated.resources.home_search_placeholder
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -56,74 +65,88 @@ fun HomeRoot(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     state: HomeState,
     onAction: (HomeAction) -> Unit,
 ) {
-    // Manage query state
-    var query by rememberSaveable { mutableStateOf("") }
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            CoffeeXpSearchBar(
-                query = query,
-                onQueryChange = { query = it },
-                onSearch = { /* Handle search submission */
-//                    onEvent(HomeEvent.OnSearch(query))
-                },
-                placeholder = { Text("Search coffees") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                trailingIcon = {
-                    Icon(
-                        Icons.Default.MoreVert,
-                        contentDescription = "More options"
-                    )
-                },
+            CenterAlignedTopAppBar(
+                title = { Text(stringResource(Res.string.app_name)) }
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 onAction(HomeAction.OnNewCoffeeClick)
             }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add new coffee")
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(Res.string.cd_add_new_coffee)
+                )
             }
         }
     ) { innerPadding ->
-        if (state.coffeeList.isNullOrEmpty()) {
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("No coffees yet. Add one with the + button!")
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(items = state.coffeeList, key = { it.id ?: 0 }) { coffee ->
-                    SwipeToDeleteCoffeeBox(
-                        coffee = coffee,
-                        onToggleDone = {
-//                            Toast.makeText(context, "onToggleDone", Toast.LENGTH_SHORT).show()
-                        },
-                        onRemove = {
-//                            onEvent(HomeEvent.OnRemoveCoffee(it))
-                        },
-                        onClick = { coffee ->
-                            coffee.id?.let { coffeeId ->
-                                onAction(HomeAction.OnDetailsClick(coffeeId))
-                            }
-                        },
-                        modifier = Modifier.animateItem()
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(horizontal = CoffeeXpTheme.spacing.marginMobile)
+        ) {
+            Text(
+                text = stringResource(Res.string.home_my_brews),
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base)
+            )
+
+            CoffeeXpSearchBar(
+                query = state.searchQuery,
+                onQueryChange = { onAction(HomeAction.OnSearch(it)) },
+                onSearch = { onAction(HomeAction.OnSearch(it)) },
+                placeholder = { Text(stringResource(Res.string.home_search_placeholder)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = stringResource(Res.string.cd_search)
                     )
+                },
+                trailingIcon = {
+                    Icon(
+                        Icons.Default.MoreVert,
+                        contentDescription = stringResource(Res.string.cd_more_options)
+                    )
+                },
+                modifier = Modifier.padding(top = CoffeeXpTheme.spacing.stackSm)
+            )
+
+            if (state.coffeeList.isNullOrEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(stringResource(Res.string.home_empty_state))
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = CoffeeXpTheme.spacing.gutter),
+                    verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.gutter)
+                ) {
+                    items(items = state.coffeeList, key = { it.id ?: 0 }) { coffee ->
+                        SwipeToDeleteCoffeeBox(
+                            coffee = coffee,
+                            onToggleDone = {},
+                            onRemove = { onAction(HomeAction.OnCoffeeRemoved(it)) },
+                            onClick = { clicked ->
+                                clicked.id?.let { coffeeId ->
+                                    onAction(HomeAction.OnDetailsClick(coffeeId))
+                                }
+                            },
+                            modifier = Modifier.animateItem()
+                        )
+                    }
                 }
             }
         }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Coffee Xp</string>
+
+    <string name="home_my_brews">My Brews</string>
+    <string name="home_search_placeholder">Search your past logs…</string>
+    <string name="home_empty_state">No coffees yet. Add one with the + button!</string>
+
+    <string name="cd_search">Search</string>
+    <string name="cd_more_options">More options</string>
+    <string name="cd_add_new_coffee">Add new coffee</string>
+    <string name="cd_remove_item">Remove item</string>
+    <string name="cd_coffee_rating">Rating</string>
+</resources>
