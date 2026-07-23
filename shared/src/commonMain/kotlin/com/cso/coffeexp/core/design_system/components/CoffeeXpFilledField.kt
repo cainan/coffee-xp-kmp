@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -19,8 +21,7 @@ import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 @Composable
 fun CoffeeXpFilledField(
     label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
+    state: TextFieldState,
     modifier: Modifier = Modifier,
     suffix: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -33,11 +34,9 @@ fun CoffeeXpFilledField(
         )
         Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base / 2))
         TextField(
-            value = value,
-            onValueChange = onValueChange,
+            state = state,
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.medium,
-            singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             trailingIcon = suffix?.let {
                 {
@@ -65,8 +64,7 @@ private fun CoffeeXpFilledFieldPreview() {
     CoffeeXpTheme {
         CoffeeXpFilledField(
             label = "Grind Size",
-            value = "24",
-            onValueChange = {},
+            state = rememberTextFieldState("24"),
             suffix = "CLICKS"
         )
     }

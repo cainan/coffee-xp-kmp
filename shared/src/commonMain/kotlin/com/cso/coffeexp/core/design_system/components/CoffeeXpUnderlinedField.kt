@@ -3,6 +3,9 @@ package com.cso.coffeexp.core.design_system.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -17,12 +20,10 @@ import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 @Composable
 fun CoffeeXpUnderlinedField(
     label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
+    state: TextFieldState,
     modifier: Modifier = Modifier,
     placeholder: String? = null,
-    singleLine: Boolean = true,
-    minLines: Int = 1,
+    lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
     keyboardType: KeyboardType = KeyboardType.Text,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -32,12 +33,10 @@ fun CoffeeXpUnderlinedField(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         TextField(
-            value = value,
-            onValueChange = onValueChange,
+            state = state,
             modifier = Modifier.fillMaxWidth(),
             placeholder = placeholder?.let { { Text(it) } },
-            singleLine = singleLine,
-            minLines = minLines,
+            lineLimits = lineLimits,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
@@ -56,8 +55,7 @@ private fun CoffeeXpUnderlinedFieldPreview() {
     CoffeeXpTheme {
         CoffeeXpUnderlinedField(
             label = "Coffee Name",
-            value = "",
-            onValueChange = {},
+            state = rememberTextFieldState(),
             placeholder = "e.g. Ethiopian Yirgacheffe"
         )
     }
