@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 class NewCoffeeViewModel : ViewModel() {
 
@@ -27,8 +28,19 @@ class NewCoffeeViewModel : ViewModel() {
 
     fun onAction(action: NewCoffeeAction) {
         when (action) {
-            else -> TODO("Handle actions")
+            is NewCoffeeAction.OnBrewingMethodExpandedChange -> _state.update { it.copy(isBrewingMethodExpanded = action.expanded) }
+            is NewCoffeeAction.OnBrewingMethodSelected -> _state.update {
+                it.copy(brewingMethod = action.value, isBrewingMethodExpanded = false)
+            }
+            is NewCoffeeAction.OnRatingChange -> _state.update { it.copy(overallRating = action.rating) }
+            NewCoffeeAction.OnPhotoClick -> {
+                // TODO: wire to platform image picker once the data layer exists.
+            }
+            NewCoffeeAction.OnSaveClick -> {
+                // TODO: wire to CoffeeRepository once the data layer exists, e.g.:
+                //  val coffee = Coffee(name = state.value.coffeeNameState.text.toString(), ...)
+            }
+            NewCoffeeAction.OnBackClick -> Unit // handled by Root
         }
     }
-
 }
