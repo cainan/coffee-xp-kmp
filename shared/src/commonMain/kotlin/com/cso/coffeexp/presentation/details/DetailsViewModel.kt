@@ -15,7 +15,8 @@ class DetailsViewModel : ViewModel() {
     val state = _state
         .onStart {
             if (!hasLoadedInitialData) {
-                /** Load initial data here **/
+                // TODO: load the coffee by id (from SavedStateHandle) via CoffeeRepository
+                //  once the data layer and navigation argument passing exist.
                 hasLoadedInitialData = true
             }
         }
@@ -27,8 +28,8 @@ class DetailsViewModel : ViewModel() {
 
     fun onAction(action: DetailsAction) {
         when (action) {
-            else -> TODO("Handle actions")
+            DetailsAction.OnBackClick -> Unit // handled by Root
+            DetailsAction.OnEditClick -> Unit // TODO: wire to navigation once it exists
         }
     }
-
 }

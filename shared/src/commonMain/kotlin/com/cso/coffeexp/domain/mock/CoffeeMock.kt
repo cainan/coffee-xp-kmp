@@ -15,12 +15,14 @@ val mockCoffee = Coffee(
     roastDate = LocalDate(2026, 6, 12),
     roastLevel = "Light",
     brewingMethod = "V60 Pour-over",
-    grindSize = 18,
+    grindSize = "18",
     temperature = 94,
     ratio = "1:16",
     brewTime = "3:15 min",
     rating = 9.6,
-    notes = "Bright acidity with notes of blueberry and jasmine."
+    notes = "Bright acidity with notes of blueberry and jasmine.",
+    createdAt = LocalDate(2026, 6, 12),
+    lastModifiedAt = LocalDate(2026, 6, 12)
 )
 
 val mockCoffeeList = listOf(
@@ -38,13 +40,20 @@ val mockCoffeeList = listOf(
         ratio = "1:15",
         brewTime = "4:00 min",
         rating = 9.0,
-        notes = "Balanced with caramel sweetness and a nutty finish."
+        notes = "Balanced with caramel sweetness and a nutty finish.",
+        createdAt = LocalDate(2026, 5, 28),
+        lastModifiedAt = LocalDate(2026, 5, 28)
     ),
     Coffee(
         id = 3,
         name = "Brazilian Santos",
         roastLevel = "Dark",
         brewingMethod = "Espresso",
-        rating = 8.4
+        rating = 8.4,
+        roaster = "Onyx Coffee Lab",
+        origin = "Ethiopia",
+        roastDate = LocalDate(2026, 6, 20),
+        createdAt = LocalDate(2026, 6, 20),
+        lastModifiedAt = LocalDate(2026, 6, 20)
     )
 )
