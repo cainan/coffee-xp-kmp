@@ -1,7 +1,7 @@
 package com.cso.coffeexp.di
 
-import com.cso.coffeexp.data.coffee.InMemoryCoffeeRepository
 import com.cso.coffeexp.data.logger.KermitLogger
+import com.cso.coffeexp.data.repository.OfflineFirstCoffeeRepository
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.repository.CoffeeRepository
 import com.cso.coffeexp.presentation.details.DetailsViewModel
@@ -15,5 +15,7 @@ val sharedModule = module {
     viewModelOf(::NewCoffeeViewModel)
     viewModelOf(::DetailsViewModel)
     single<CoffeeXpLogger> { KermitLogger() }
-    single<CoffeeRepository> { InMemoryCoffeeRepository() }
+    single<CoffeeRepository> { OfflineFirstCoffeeRepository(
+        db = get()
+    ) }
 }

@@ -10,7 +10,7 @@ import com.cso.coffeexp.database.entity.CoffeeEntity
 @Database(entities = [CoffeeEntity::class], version = 1)
 @ConstructedBy(CoffeeXpDatabaseConstructor::class)
 abstract class CoffeeXpDatabase : RoomDatabase() {
-    abstract fun getDao(): CoffeeDAO
+    abstract fun getCoffeeDao(): CoffeeDAO
 
     companion object {
         const val DB_NAME = "coffeexp.db"

@@ -4,6 +4,8 @@ import com.cso.coffeexp.domain.model.Coffee
 import kotlinx.coroutines.flow.Flow
 
 interface CoffeeRepository {
+    suspend fun getCoffeeById(id: Long): Coffee?
     fun getCoffees(): Flow<List<Coffee>>
-    suspend fun deleteCoffee(id: Long)
+    suspend fun upsertCoffee(coffee: Coffee) : Long
+    suspend fun deleteCoffee(id: Long) : Int
 }

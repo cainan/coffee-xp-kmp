@@ -25,11 +25,14 @@ class HomeViewModel(
             isLoading = false,
             coffeeList = coffees.filter { coffee ->
                 query.isBlank() ||
-                    coffee.name.contains(query, ignoreCase = true) ||
-                    coffee.roaster?.contains(query, ignoreCase = true) == true
+                        coffee.name.contains(query, ignoreCase = true) || coffee.roaster.contains(
+                    query,
+                    ignoreCase = true
+                )
             },
             searchQuery = query,
         )
+
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
@@ -39,7 +42,10 @@ class HomeViewModel(
     fun onAction(action: HomeAction) {
         logger.debug("${this.toString()} - action received: $action")
         when (action) {
-            is HomeAction.OnSearch -> searchQuery.value = action.query
+            is HomeAction.OnSearch -> {
+                searchQuery.value = action.query
+            }
+
             is HomeAction.OnCoffeeRemoved -> viewModelScope.launch {
                 action.coffee.id?.let { coffeeRepository.deleteCoffee(it) }
             }
