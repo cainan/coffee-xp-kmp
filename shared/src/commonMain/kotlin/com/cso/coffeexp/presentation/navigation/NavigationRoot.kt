@@ -13,6 +13,7 @@ fun NavigationRoot(
     navController: NavHostController,
     startDestination: Any
 ) {
+
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -30,11 +31,22 @@ fun NavigationRoot(
         }
 
         composable<UIRoute.NewCoffee> {
-            NewCoffeeRoot()
+            NewCoffeeRoot(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable<UIRoute.Details> {
-            DetailsRoot()
+            DetailsRoot(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onEditClick = {
+                    // TODO
+                }
+            )
         }
     }
 }
