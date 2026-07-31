@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "468b550bee7af0c907b4f93158ab2aa0",
+    "identityHash": "8cc8a2e8a31c4a5fcc5c9c0d93585bb3",
     "entities": [
       {
         "tableName": "coffee",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `imageUrl` TEXT, `name` TEXT NOT NULL, `roaster` TEXT NOT NULL, `series` TEXT, `origin` TEXT NOT NULL, `process` TEXT, `elevation` TEXT, `roastDate` INTEGER NOT NULL, `roastLevel` TEXT NOT NULL, `brewingMethod` TEXT NOT NULL, `grindSize` TEXT, `temperature` INTEGER, `ratio` TEXT, `brewTime` TEXT, `rating` REAL NOT NULL, `notes` TEXT, `createdAt` INTEGER NOT NULL, `lastModifiedAt` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `imageUrl` TEXT, `name` TEXT NOT NULL, `roaster` TEXT NOT NULL, `series` TEXT, `origin` TEXT NOT NULL, `process` TEXT, `elevation` TEXT, `roastDate` TEXT NOT NULL, `roastLevel` TEXT NOT NULL, `brewingMethod` TEXT NOT NULL, `grindSize` TEXT, `temperature` TEXT, `ratio` TEXT, `brewTime` TEXT, `rating` REAL NOT NULL, `notes` TEXT, `createdAt` TEXT NOT NULL, `lastModifiedAt` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -55,7 +55,7 @@
           {
             "fieldPath": "roastDate",
             "columnName": "roastDate",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -78,7 +78,7 @@
           {
             "fieldPath": "temperature",
             "columnName": "temperature",
-            "affinity": "INTEGER"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "ratio",
@@ -104,13 +104,13 @@
           {
             "fieldPath": "createdAt",
             "columnName": "createdAt",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "lastModifiedAt",
             "columnName": "lastModifiedAt",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -124,7 +124,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '468b550bee7af0c907b4f93158ab2aa0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8cc8a2e8a31c4a5fcc5c9c0d93585bb3')"
     ]
   }
 }

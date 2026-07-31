@@ -1,8 +1,9 @@
 package com.cso.coffeexp.data.mapper
 
+import com.cso.coffeexp.core.utils.LocalDate
+import com.cso.coffeexp.core.utils.toEpochMillisString
 import com.cso.coffeexp.database.entity.CoffeeEntity
 import com.cso.coffeexp.domain.model.Coffee
-import kotlinx.datetime.LocalDate
 
 fun CoffeeEntity.toCoffee(): Coffee = Coffee(
     id = id,
@@ -13,7 +14,7 @@ fun CoffeeEntity.toCoffee(): Coffee = Coffee(
     origin = origin,
     process = process,
     elevation = elevation,
-    roastDate = roastDate.toLocalDate(),
+    roastDate = LocalDate(roastDate.toLong()),
     roastLevel = roastLevel,
     brewingMethod = brewingMethod,
     grindSize = grindSize,
@@ -22,8 +23,8 @@ fun CoffeeEntity.toCoffee(): Coffee = Coffee(
     brewTime = brewTime,
     rating = rating,
     notes = notes,
-    createdAt = createdAt.toLocalDate(),
-    lastModifiedAt = lastModifiedAt.toLocalDate(),
+    createdAt = LocalDate(createdAt.toLong()),
+    lastModifiedAt = LocalDate(lastModifiedAt.toLong()),
 )
 
 fun Coffee.toCoffeeEntity(): CoffeeEntity = CoffeeEntity(
@@ -35,7 +36,7 @@ fun Coffee.toCoffeeEntity(): CoffeeEntity = CoffeeEntity(
     origin = origin,
     process = process,
     elevation = elevation,
-    roastDate = roastDate.toEpochDays(),
+    roastDate = roastDate.toEpochMillisString(),
     roastLevel = roastLevel,
     brewingMethod = brewingMethod,
     grindSize = grindSize,
@@ -44,8 +45,6 @@ fun Coffee.toCoffeeEntity(): CoffeeEntity = CoffeeEntity(
     brewTime = brewTime,
     rating = rating,
     notes = notes,
-    createdAt = createdAt.toEpochDays(),
-    lastModifiedAt = lastModifiedAt.toEpochDays(),
+    createdAt = roastDate.toEpochMillisString(),
+    lastModifiedAt = roastDate.toEpochMillisString(),
 )
-
-private fun Long.toLocalDate(): LocalDate = LocalDate.fromEpochDays(this)

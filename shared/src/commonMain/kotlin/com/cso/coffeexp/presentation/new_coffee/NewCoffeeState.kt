@@ -28,7 +28,7 @@ data class NewCoffeeState(
     val grindSizeState: TextFieldState = TextFieldState(),
     val temperatureState: TextFieldState = TextFieldState(),
     val ratioState: TextFieldState = TextFieldState(),
-    val totalTimeState: TextFieldState = TextFieldState(),
+    val brewDuration: TextFieldState = TextFieldState(),
     val overallRating: Int = 0,
     val tastingNotesState: TextFieldState = TextFieldState(),
 )

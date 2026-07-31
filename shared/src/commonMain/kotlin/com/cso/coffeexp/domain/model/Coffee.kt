@@ -18,7 +18,7 @@ data class Coffee(
     val roastLevel: String = "", // Light | Medium | Medium-Dark | Dark
     val brewingMethod: String = "", // e.g. "V60 Pour-over"
     val grindSize: String? = null, // Grinder setting, in clicks; null = not specified
-    val temperature: Int? = null, // Brew water temperature, °C; null = not specified
+    val temperature: String? = null, // Brew water temperature, °C; null = not specified
     val ratio: String? = null, // Coffee:water ratio, e.g. "1:16"
     val brewTime: String? = null, // e.g. "3:15 min"
     val rating: Double = 0.0, // Canonical 0–10 score; UI derives a /5 star display as rating / 2

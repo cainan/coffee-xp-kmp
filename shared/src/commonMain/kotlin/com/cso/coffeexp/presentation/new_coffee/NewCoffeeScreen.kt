@@ -220,7 +220,7 @@ fun NewCoffeeScreen(
                     )
                     CoffeeXpFilledField(
                         label = stringResource(Res.string.new_coffee_total_time_label),
-                        state = state.totalTimeState
+                        state = state.brewDuration
                     )
                 }
             }
@@ -278,7 +278,7 @@ private fun Preview() {
                 grindSizeState = TextFieldState("24"),
                 temperatureState = TextFieldState("94"),
                 ratioState = TextFieldState("1:16"),
-                totalTimeState = TextFieldState("3:15 min"),
+                brewDuration = TextFieldState("3:15 min"),
                 overallRating = 4
             ),
             onAction = {}
