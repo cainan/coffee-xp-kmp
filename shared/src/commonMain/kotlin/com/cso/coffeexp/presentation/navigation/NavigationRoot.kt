@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.cso.coffeexp.presentation.details.DetailsRoot
 import com.cso.coffeexp.presentation.home.HomeRoot
 import com.cso.coffeexp.presentation.new_coffee.NewCoffeeRoot
@@ -22,7 +23,7 @@ fun NavigationRoot(
         composable<UIRoute.Home> {
             HomeRoot(
                 onNewCoffeeClick = {
-                    navController.navigate(UIRoute.NewCoffee)
+                    navController.navigate(UIRoute.NewCoffee(null))
                 },
                 onDetailsClick = { coffeeId ->
                     navController.navigate(UIRoute.Details(coffeeId))
@@ -30,21 +31,27 @@ fun NavigationRoot(
             )
         }
 
-        composable<UIRoute.NewCoffee> {
+        composable<UIRoute.NewCoffee> { backStackEntry ->
+            val newCoffee: UIRoute.NewCoffee = backStackEntry.toRoute()
+            val coffeeToEdit = newCoffee.coffeeId
             NewCoffeeRoot(
+                coffeeToEdit = coffeeToEdit,
                 onBackClick = {
                     navController.popBackStack()
                 }
             )
         }
 
-        composable<UIRoute.Details> {
+        composable<UIRoute.Details> { backStackEntry ->
+            val details: UIRoute.Details = backStackEntry.toRoute()
+            val coffeeId = details.coffeeId
             DetailsRoot(
+                coffeeId = coffeeId,
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onEditClick = {
-                    // TODO
+                onEditClick = { coffeeId ->
+                    navController.navigate(UIRoute.NewCoffee(coffeeId))
                 }
             )
         }

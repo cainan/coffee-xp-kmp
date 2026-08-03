@@ -5,5 +5,5 @@ import com.cso.coffeexp.domain.model.Coffee
 
 @Stable
 data class DetailsState(
-    val coffee: Coffee = Coffee(),
+    val coffee: Coffee? = null,
 )

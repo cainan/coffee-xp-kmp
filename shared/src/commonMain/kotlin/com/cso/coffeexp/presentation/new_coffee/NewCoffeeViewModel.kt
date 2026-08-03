@@ -1,8 +1,10 @@
 package com.cso.coffeexp.presentation.new_coffee
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cso.coffeexp.core.utils.LocalDate
+import com.cso.coffeexp.core.utils.toEpochMillisString
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.domain.repository.CoffeeRepository
@@ -56,7 +58,41 @@ class NewCoffeeViewModel(
                 saveCoffee()
             }
 
+            is NewCoffeeAction.OnCoffeeToEditSelected -> {
+                onCoffeeToEditSelected(action.coffeeId)
+            }
+
             NewCoffeeAction.OnBackClick -> Unit // handled by Root
+
+        }
+    }
+
+    private fun onCoffeeToEditSelected(coffeeId: Long) {
+        viewModelScope.launch {
+            coffeeRepository.getCoffeeById(coffeeId)?.let { coffeeToEdit ->
+                _state.update {
+                    it.copy(
+                        coffeeId = coffeeToEdit.id,
+                        photoUri = coffeeToEdit.imageUrl,
+                        coffeeNameState = TextFieldState(coffeeToEdit.name),
+                        roasterState = TextFieldState(coffeeToEdit.roaster),
+                        seriesCollectionState = TextFieldState(coffeeToEdit.series ?: ""),
+                        originState = TextFieldState(coffeeToEdit.origin),
+                        processState = TextFieldState(coffeeToEdit.process ?: ""),
+                        elevationState = TextFieldState(coffeeToEdit.elevation ?: ""),
+                        roastDateState = TextFieldState(coffeeToEdit.roastDate.toEpochMillisString()),
+                        roastLevelState = TextFieldState(coffeeToEdit.roastLevel),
+                        brewingMethod = coffeeToEdit.brewingMethod,
+                        grindSizeState = TextFieldState(coffeeToEdit.grindSize ?: ""),
+                        temperatureState = TextFieldState(coffeeToEdit.temperature ?: ""),
+                        ratioState = TextFieldState(coffeeToEdit.ratio ?: ""),
+                        brewDuration = TextFieldState(coffeeToEdit.brewTime ?: ""),
+                        overallRating = coffeeToEdit.rating,
+                        tastingNotesState = TextFieldState(coffeeToEdit.notes ?: "")
+                    )
+                }
+
+            }
         }
     }
 
@@ -81,7 +117,7 @@ class NewCoffeeViewModel(
                     temperature = _state.value.temperatureState.text.toString(),
                     ratio = _state.value.ratioState.text.toString(),
                     brewTime = _state.value.brewDuration.text.toString(),
-                    rating = _state.value.overallRating.toDouble(),
+                    rating = _state.value.overallRating,
                     notes = _state.value.tastingNotesState.text.toString(),
                     createdAt = LocalDate(),
                     lastModifiedAt = LocalDate()

@@ -2,12 +2,19 @@ package com.cso.coffeexp.presentation.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cso.coffeexp.domain.logger.CoffeeXpLogger
+import com.cso.coffeexp.domain.repository.CoffeeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class DetailsViewModel : ViewModel() {
+class DetailsViewModel(
+    private val coffeeRepository: CoffeeRepository,
+    private val logger: CoffeeXpLogger
+) : ViewModel() {
 
     private var hasLoadedInitialData = false
 
@@ -28,8 +35,25 @@ class DetailsViewModel : ViewModel() {
 
     fun onAction(action: DetailsAction) {
         when (action) {
-            DetailsAction.OnBackClick -> Unit // handled by Root
-            DetailsAction.OnEditClick -> Unit // TODO: wire to navigation once it exists
+            is DetailsAction.OnCoffeeIdSelected -> {
+                loadCoffeeDetails(action.coffeeId)
+            }
+
+            DetailsAction.OnBackClick -> Unit // handled by View
+            is DetailsAction.OnEditClick -> Unit // Handled by View
+        }
+    }
+
+    private fun loadCoffeeDetails(selectedCoffeeId: Long) {
+        viewModelScope.launch {
+            val details = coffeeRepository.getCoffeeById(selectedCoffeeId)
+            details?.let {
+                _state.update {
+                    it.copy(
+                        coffee = details
+                    )
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Stable
 
 @Stable
 data class NewCoffeeState(
+    val coffeeId: Long? = null,
     val photoUri: String? = null,
     val coffeeNameState: TextFieldState = TextFieldState(),
     val roasterState: TextFieldState = TextFieldState(),
@@ -29,6 +30,6 @@ data class NewCoffeeState(
     val temperatureState: TextFieldState = TextFieldState(),
     val ratioState: TextFieldState = TextFieldState(),
     val brewDuration: TextFieldState = TextFieldState(),
-    val overallRating: Int = 0,
+    val overallRating: Double = 0.0,
     val tastingNotesState: TextFieldState = TextFieldState(),
 )

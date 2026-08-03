@@ -32,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,17 +77,26 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun DetailsRoot(
     viewModel: DetailsViewModel = koinViewModel(),
+    coffeeId: Long,
     onBackClick: () -> Unit = {},
-    onEditClick: () -> Unit = {},
+    onEditClick: (coffeeId: Long) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(coffeeId) {
+        viewModel.onAction(DetailsAction.OnCoffeeIdSelected(coffeeId))
+    }
 
     DetailsScreen(
         state = state,
         onAction = { action ->
             when (action) {
                 DetailsAction.OnBackClick -> onBackClick()
-                DetailsAction.OnEditClick -> onEditClick()
+                is DetailsAction.OnEditClick -> {
+                    onEditClick(action.coffeeId)
+                }
+
+                else -> Unit
             }
             viewModel.onAction(action)
         }
@@ -101,149 +111,152 @@ fun DetailsScreen(
 ) {
     val details = state.coffee
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            CoffeeXpTopBar(
-                title = stringResource(Res.string.app_name),
-                onBackClick = { onAction(DetailsAction.OnBackClick) },
-                backContentDescription = stringResource(Res.string.cd_back),
-                actions = {
-                    TextButton(onClick = { onAction(DetailsAction.OnEditClick) }) {
-                        Icon(
-                            imageVector = Icons.Filled.Edit,
-                            contentDescription = stringResource(Res.string.cd_edit_coffee),
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
-                        Text(stringResource(Res.string.details_edit_button))
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            CoffeeHeroHeader(
-                imageUrl = details.imageUrl,
-                eyebrow = details.series,
-                title = details.name,
-                subtitle = details.roaster,
-                imageContentDescription = details.name
-            )
+    state.coffee?.let {
 
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                CoffeeXpTopBar(
+                    title = stringResource(Res.string.app_name),
+                    onBackClick = { onAction(DetailsAction.OnBackClick) },
+                    backContentDescription = stringResource(Res.string.cd_back),
+                    actions = {
+                        TextButton(onClick = { onAction(DetailsAction.OnEditClick(state.coffee.id!!)) }) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = stringResource(Res.string.cd_edit_coffee),
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
+                            Text(stringResource(Res.string.details_edit_button))
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = CoffeeXpTheme.spacing.marginMobile)
-                    .padding(
-                        top = CoffeeXpTheme.spacing.stackMd,
-                        bottom = CoffeeXpTheme.spacing.stackLg
-                    ),
-                verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)) {
-                    Text(
-                        text = stringResource(Res.string.details_brew_profile),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    BrewProfileRow(
-                        first = Triple(
-                            Icons.Filled.Coffee,
-                            stringResource(Res.string.details_method_label),
-                            details.brewingMethod
-                        ),
-                        second = Triple(
-                            Icons.Filled.WaterDrop,
-                            stringResource(Res.string.details_ratio_label),
-                            details.ratio ?: "-"
-                        )
-                    )
-                    BrewProfileRow(
-                        first = Triple(
-                            Icons.Filled.Timer,
-                            stringResource(Res.string.details_total_time_label),
-                            details.brewTime ?: "-"
-                        ),
-                        second = Triple(
-                            Icons.Filled.Thermostat,
-                            stringResource(Res.string.details_temp_label),
-                            details.temperature.toString()
-                        )
-                    )
-                    BrewProfileRow(
-                        first = Triple(
-                            Icons.Filled.Tune,
-                            stringResource(Res.string.details_grind_size_label),
-                            details.grindSize ?: "-"
-                        ),
-                        second = Triple(
-                            Icons.Filled.LocalFireDepartment,
-                            stringResource(Res.string.details_roast_level_label),
-                            details.roastLevel
-                        )
-                    )
-                }
-
-                FinalAssessmentCard(
-                    rating = details.rating,
-                    notes = details.notes ?: ""
+                CoffeeHeroHeader(
+                    imageUrl = details.imageUrl,
+                    eyebrow = details.series,
+                    title = details.name,
+                    subtitle = details.roaster,
+                    imageContentDescription = details.name
                 )
 
-                CoffeeXpCard {
-                    Row(verticalAlignment = Alignment.Top) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Article,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                        Spacer(modifier = Modifier.width(CoffeeXpTheme.spacing.base))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = CoffeeXpTheme.spacing.marginMobile)
+                        .padding(
+                            top = CoffeeXpTheme.spacing.stackMd,
+                            bottom = CoffeeXpTheme.spacing.stackLg
+                        ),
+                    verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)) {
                         Text(
-                            text = stringResource(Res.string.details_user_logged_info),
+                            text = stringResource(Res.string.details_brew_profile),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        BrewProfileRow(
+                            first = Triple(
+                                Icons.Filled.Coffee,
+                                stringResource(Res.string.details_method_label),
+                                details.brewingMethod
+                            ),
+                            second = Triple(
+                                Icons.Filled.WaterDrop,
+                                stringResource(Res.string.details_ratio_label),
+                                details.ratio ?: "-"
+                            )
+                        )
+                        BrewProfileRow(
+                            first = Triple(
+                                Icons.Filled.Timer,
+                                stringResource(Res.string.details_total_time_label),
+                                details.brewTime ?: "-"
+                            ),
+                            second = Triple(
+                                Icons.Filled.Thermostat,
+                                stringResource(Res.string.details_temp_label),
+                                details.temperature.toString()
+                            )
+                        )
+                        BrewProfileRow(
+                            first = Triple(
+                                Icons.Filled.Tune,
+                                stringResource(Res.string.details_grind_size_label),
+                                details.grindSize ?: "-"
+                            ),
+                            second = Triple(
+                                Icons.Filled.LocalFireDepartment,
+                                stringResource(Res.string.details_roast_level_label),
+                                details.roastLevel
+                            )
+                        )
                     }
-                    Column(
-                        modifier = Modifier.padding(top = CoffeeXpTheme.spacing.stackSm),
-                        verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackSm)
-                    ) {
 
-                        InfoRow(
-                            label = stringResource(Res.string.details_origin_label),
-                            value = details.origin
-                        )
+                    FinalAssessmentCard(
+                        rating = details.rating,
+                        notes = details.notes ?: ""
+                    )
 
-                        InfoRow(
-                            label = stringResource(Res.string.details_process_label),
-                            value = details.process ?: "-"
-                        )
+                    CoffeeXpCard {
+                        Row(verticalAlignment = Alignment.Top) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Article,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                            Spacer(modifier = Modifier.width(CoffeeXpTheme.spacing.base))
+                            Text(
+                                text = stringResource(Res.string.details_user_logged_info),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Column(
+                            modifier = Modifier.padding(top = CoffeeXpTheme.spacing.stackSm),
+                            verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackSm)
+                        ) {
 
-                        InfoRow(
-                            label = stringResource(Res.string.details_elevation_label),
-                            value = details.elevation ?: "-"
-                        )
+                            InfoRow(
+                                label = stringResource(Res.string.details_origin_label),
+                                value = details.origin
+                            )
 
-                        InfoRow(
-                            label = stringResource(Res.string.details_roast_date_label),
-                            value = details.roastDate.toString()
-                        )
+                            InfoRow(
+                                label = stringResource(Res.string.details_process_label),
+                                value = details.process ?: "-"
+                            )
 
+                            InfoRow(
+                                label = stringResource(Res.string.details_elevation_label),
+                                value = details.elevation ?: "-"
+                            )
+
+                            InfoRow(
+                                label = stringResource(Res.string.details_roast_date_label),
+                                value = details.roastDate.toString()
+                            )
+
+                        }
                     }
+
+                    Text(
+                        text = stringResource(Res.string.details_logged_on, details.lastModifiedAt),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
-
-                Text(
-                    text = stringResource(Res.string.details_logged_on, details.lastModifiedAt),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
             }
         }
     }

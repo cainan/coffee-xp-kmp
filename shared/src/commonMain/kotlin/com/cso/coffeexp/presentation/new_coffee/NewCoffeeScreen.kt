@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,9 +79,16 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun NewCoffeeRoot(
     viewModel: NewCoffeeViewModel = koinViewModel(),
+    coffeeToEdit: Long? = null,
     onBackClick: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(coffeeToEdit) {
+        coffeeToEdit?.let {
+            viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(it))
+        }
+    }
 
     NewCoffeeScreen(
         state = state,
@@ -199,7 +207,13 @@ fun NewCoffeeScreen(
                         selectedValue = state.brewingMethod,
                         options = state.brewingMethodOptions,
                         expanded = state.isBrewingMethodExpanded,
-                        onExpandedChange = { onAction(NewCoffeeAction.OnBrewingMethodExpandedChange(it)) },
+                        onExpandedChange = {
+                            onAction(
+                                NewCoffeeAction.OnBrewingMethodExpandedChange(
+                                    it
+                                )
+                            )
+                        },
                         onOptionSelected = { onAction(NewCoffeeAction.OnBrewingMethodSelected(it)) }
                     )
                     CoffeeXpFilledField(
@@ -242,8 +256,8 @@ fun NewCoffeeScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     StarRating(
-                        rating = state.overallRating.toDouble(),
-                        onRatingChange = { onAction(NewCoffeeAction.OnRatingChange(it)) },
+                        rating = state.overallRating,
+                        onRatingChange = { onAction(NewCoffeeAction.OnRatingChange(it.toDouble())) },
                         starSize = 32.dp,
                         modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base)
                     )
@@ -279,7 +293,7 @@ private fun Preview() {
                 temperatureState = TextFieldState("94"),
                 ratioState = TextFieldState("1:16"),
                 brewDuration = TextFieldState("3:15 min"),
-                overallRating = 4
+                overallRating = 4.0
             ),
             onAction = {}
         )
