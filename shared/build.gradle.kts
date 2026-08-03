@@ -20,25 +20,25 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm()
-    
+
     androidLibrary {
-       namespace = "com.cso.coffeexp.shared"
-       compileSdk = libs.versions.android.compileSdk.get().toInt()
-       minSdk = libs.versions.android.minSdk.get().toInt()
-    
-       compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
-       }
-       androidResources {
-           enable = true
-       }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
+        namespace = "com.cso.coffeexp.shared"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+        androidResources {
+            enable = true
+        }
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -70,8 +70,22 @@ kotlin {
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+                implementation(libs.kotlinx.coroutines.test)
+            }
+        }
+        val androidHostTest by getting {
+            dependsOn(commonTest)
+            dependencies {
+                implementation(libs.androidx.test.core)
+                implementation(libs.junit)
+                implementation(libs.robolectric)
+            }
+        }
+        val jvmTest by getting {
+            dependsOn(commonTest)
         }
     }
 }

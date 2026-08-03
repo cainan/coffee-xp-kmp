@@ -45,6 +45,6 @@ fun Coffee.toCoffeeEntity(): CoffeeEntity = CoffeeEntity(
     brewTime = brewTime,
     rating = rating,
     notes = notes,
-    createdAt = roastDate.toEpochMillisString(),
-    lastModifiedAt = roastDate.toEpochMillisString(),
+    createdAt = createdAt.toEpochMillisString(),
+    lastModifiedAt = lastModifiedAt.toEpochMillisString(),
 )
