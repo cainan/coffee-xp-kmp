@@ -103,6 +103,7 @@ class NewCoffeeViewModel(
 
             coffeeRepository.upsertCoffee(
                 coffee = Coffee(
+                    id = _state.value.coffeeId,
                     imageUrl = _state.value.photoUri,
                     name = _state.value.coffeeNameState.text.toString(),
                     roaster = _state.value.roasterState.text.toString(),
