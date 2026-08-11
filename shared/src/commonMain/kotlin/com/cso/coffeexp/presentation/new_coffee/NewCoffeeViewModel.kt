@@ -127,7 +127,7 @@ class NewCoffeeViewModel(
                     rating = _state.value.overallRating,
                     notes = _state.value.tastingNotesState.text.toString(),
                     createdAt = _state.value.createdAt ?: LocalDate(),
-                    lastModifiedAt = _state.value.lastModifiedAt ?: LocalDate()
+                    lastModifiedAt = LocalDate()
                 )
             )
 
