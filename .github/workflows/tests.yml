@@ -28,4 +28,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run tests
-        run: ./gradlew :shared:jvmTest :shared:testAndroidHostTest --stacktrace
+        run: bash ./gradlew :shared:jvmTest :shared:testAndroidHostTest --stacktrace
