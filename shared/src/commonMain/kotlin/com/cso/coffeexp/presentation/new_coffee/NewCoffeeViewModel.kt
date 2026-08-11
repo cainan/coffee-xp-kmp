@@ -53,6 +53,10 @@ class NewCoffeeViewModel(
                 // TODO: wire to platform image picker once the data layer exists.
             }
 
+            is NewCoffeeAction.OnPhotoSelected -> _state.update {
+                it.copy(photoUri = action.uri)
+            }
+
             NewCoffeeAction.OnSaveClick -> {
                 // TODO validate coffee fields before save
                 saveCoffee()
@@ -88,7 +92,9 @@ class NewCoffeeViewModel(
                         ratioState = TextFieldState(coffeeToEdit.ratio ?: ""),
                         brewDuration = TextFieldState(coffeeToEdit.brewTime ?: ""),
                         overallRating = coffeeToEdit.rating,
-                        tastingNotesState = TextFieldState(coffeeToEdit.notes ?: "")
+                        tastingNotesState = TextFieldState(coffeeToEdit.notes ?: ""),
+                        createdAt = coffeeToEdit.createdAt,
+                        lastModifiedAt = coffeeToEdit.lastModifiedAt
                     )
                 }
 
@@ -120,8 +126,8 @@ class NewCoffeeViewModel(
                     brewTime = _state.value.brewDuration.text.toString(),
                     rating = _state.value.overallRating,
                     notes = _state.value.tastingNotesState.text.toString(),
-                    createdAt = LocalDate(),
-                    lastModifiedAt = LocalDate()
+                    createdAt = _state.value.createdAt ?: LocalDate(),
+                    lastModifiedAt = _state.value.lastModifiedAt ?: LocalDate()
                 )
             )
 

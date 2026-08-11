@@ -2,6 +2,7 @@ package com.cso.coffeexp.presentation.new_coffee
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Stable
+import kotlinx.datetime.LocalDate
 
 @Stable
 data class NewCoffeeState(
@@ -32,4 +33,7 @@ data class NewCoffeeState(
     val brewDuration: TextFieldState = TextFieldState(),
     val overallRating: Double = 0.0,
     val tastingNotesState: TextFieldState = TextFieldState(),
+
+    val createdAt: LocalDate? = null,
+    val lastModifiedAt: LocalDate? = null,
 )

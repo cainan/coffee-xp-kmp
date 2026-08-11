@@ -5,6 +5,7 @@ sealed interface NewCoffeeAction {
     data class OnCoffeeToEditSelected(val coffeeId: Long) : NewCoffeeAction
     data object OnBackClick : NewCoffeeAction
     data object OnPhotoClick : NewCoffeeAction
+    data class OnPhotoSelected(val uri: String?) : NewCoffeeAction
     data class OnBrewingMethodExpandedChange(val expanded: Boolean) : NewCoffeeAction
     data class OnBrewingMethodSelected(val value: String) : NewCoffeeAction
     data class OnRatingChange(val rating: Double) : NewCoffeeAction

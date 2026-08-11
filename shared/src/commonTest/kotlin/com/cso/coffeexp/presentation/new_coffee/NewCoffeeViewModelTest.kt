@@ -1,6 +1,8 @@
 package com.cso.coffeexp.presentation.new_coffee
 
 import app.cash.turbine.test
+import androidx.compose.foundation.text.input.TextFieldState
+import com.cso.coffeexp.core.utils.LocalDate
 import com.cso.coffeexp.core.utils.toEpochMillisString
 import com.cso.coffeexp.testutil.FakeCoffeeRepository
 import com.cso.coffeexp.testutil.FakeCoffeeXpLogger
@@ -148,5 +150,68 @@ class NewCoffeeViewModelTest {
         }
 
         assertEquals(41L, repository.upsertedCoffees.single().id)
+    }
+
+    @Ignore
+    @Test
+    fun `saving an edited coffee persists every changed field`() = runTest {
+        val original = coffeeFixture(id = 51L)
+        val repository = FakeCoffeeRepository().apply { coffeeById = original }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+
+        viewModel.state.test {
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(51L))
+            val state = awaitItem()
+
+            state.coffeeNameState.replaceText("Geisha")
+            state.roasterState.replaceText("New Roaster")
+            state.seriesCollectionState.replaceText("Competition Lot")
+            state.originState.replaceText("Panama")
+            state.processState.replaceText("Washed")
+            state.elevationState.replaceText("1,800m")
+            val changedRoastDate = kotlinx.datetime.LocalDate(2026, 8, 1)
+            state.roastDateState.replaceText(changedRoastDate.toEpochMillisString())
+            state.roastLevelState.replaceText("Light")
+            state.grindSizeState.replaceText("Fine")
+            state.temperatureState.replaceText("96C")
+            state.ratioState.replaceText("1:15")
+            state.brewDuration.replaceText("02:45")
+            state.tastingNotesState.replaceText("Jasmine and bergamot")
+            val changedPhotoUri = "file:///coffee/geisha.jpg"
+            viewModel.onAction(NewCoffeeAction.OnPhotoSelected(changedPhotoUri))
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnBrewingMethodSelected("Chemex"))
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnRatingChange(9.5))
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            cancelAndIgnoreRemainingEvents()
+
+            val saved = repository.upsertedCoffees.single()
+            assertEquals(original.id, saved.id)
+            assertEquals(changedPhotoUri, saved.imageUrl)
+            assertEquals("Geisha", saved.name)
+            assertEquals("New Roaster", saved.roaster)
+            assertEquals("Competition Lot", saved.series)
+            assertEquals("Panama", saved.origin)
+            assertEquals("Washed", saved.process)
+            assertEquals("1,800m", saved.elevation)
+            assertEquals(changedRoastDate, saved.roastDate)
+            assertEquals("Light", saved.roastLevel)
+            assertEquals("Chemex", saved.brewingMethod)
+            assertEquals("Fine", saved.grindSize)
+            assertEquals("96C", saved.temperature)
+            assertEquals("1:15", saved.ratio)
+            assertEquals("02:45", saved.brewTime)
+            assertEquals(9.5, saved.rating)
+            assertEquals("Jasmine and bergamot", saved.notes)
+            assertEquals(original.createdAt, saved.createdAt)
+            assertEquals(LocalDate(), saved.lastModifiedAt)
+        }
+    }
+
+    private fun TextFieldState.replaceText(value: String) {
+        edit { replace(0, length, value) }
     }
 }
