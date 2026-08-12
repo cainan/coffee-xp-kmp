@@ -4,7 +4,6 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cso.coffeexp.core.utils.LocalDate
-import com.cso.coffeexp.core.utils.toEpochMillisString
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.domain.repository.CoffeeRepository
@@ -49,6 +48,9 @@ class NewCoffeeViewModel(
             }
 
             is NewCoffeeAction.OnRatingChange -> _state.update { it.copy(overallRating = action.rating) }
+
+            is NewCoffeeAction.OnRoastDateSelected -> _state.update { it.copy(roastDate = action.date) }
+
             NewCoffeeAction.OnPhotoClick -> {
                 // TODO: wire to platform image picker once the data layer exists.
             }
@@ -84,7 +86,7 @@ class NewCoffeeViewModel(
                         originState = TextFieldState(coffeeToEdit.origin),
                         processState = TextFieldState(coffeeToEdit.process ?: ""),
                         elevationState = TextFieldState(coffeeToEdit.elevation ?: ""),
-                        roastDateState = TextFieldState(coffeeToEdit.roastDate.toEpochMillisString()),
+                        roastDate = coffeeToEdit.roastDate,
                         roastLevelState = TextFieldState(coffeeToEdit.roastLevel),
                         brewingMethod = coffeeToEdit.brewingMethod,
                         grindSizeState = TextFieldState(coffeeToEdit.grindSize ?: ""),
@@ -117,7 +119,7 @@ class NewCoffeeViewModel(
                     origin = _state.value.originState.text.toString(),
                     process = _state.value.processState.text.toString(),
                     elevation = _state.value.elevationState.text.toString(),
-                    roastDate = LocalDate(), // TODO Fix when apply final date picker
+                    roastDate = _state.value.roastDate,
                     roastLevel = _state.value.roastLevelState.text.toString(),
                     brewingMethod = _state.value.brewingMethod,
                     grindSize = _state.value.grindSizeState.text.toString(),

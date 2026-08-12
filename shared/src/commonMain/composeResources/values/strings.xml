@@ -13,6 +13,8 @@
     <string name="cd_coffee_rating">Rating</string>
     <string name="cd_back">Back</string>
     <string name="cd_upload_photo">Upload photo</string>
+    <string name="date_picker_confirm">OK</string>
+    <string name="date_picker_cancel">Cancel</string>
 
     <string name="new_coffee_visual_identity">Visual Identity</string>
     <string name="new_coffee_capture_moment_title">Capture the Moment</string>
@@ -31,7 +33,7 @@
     <string name="new_coffee_elevation_label">Elevation</string>
     <string name="new_coffee_elevation_placeholder">e.g. 2,000 MASL</string>
     <string name="new_coffee_roast_date_label">Roast Date</string>
-    <string name="new_coffee_roast_date_placeholder">mm/dd/yyyy</string>
+    <string name="new_coffee_roast_date_placeholder">dd/mm/yyyy</string>
     <string name="new_coffee_roast_level_label">Roast Level</string>
     <string name="new_coffee_roast_level_placeholder">e.g. Medium-Dark</string>
     <string name="new_coffee_brewing_specs">Brewing Specs</string>

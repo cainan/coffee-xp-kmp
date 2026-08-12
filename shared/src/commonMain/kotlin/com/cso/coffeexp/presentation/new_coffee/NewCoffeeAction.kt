@@ -1,5 +1,7 @@
 package com.cso.coffeexp.presentation.new_coffee
 
+import kotlinx.datetime.LocalDate
+
 sealed interface NewCoffeeAction {
 
     data class OnCoffeeToEditSelected(val coffeeId: Long) : NewCoffeeAction
@@ -9,5 +11,6 @@ sealed interface NewCoffeeAction {
     data class OnBrewingMethodExpandedChange(val expanded: Boolean) : NewCoffeeAction
     data class OnBrewingMethodSelected(val value: String) : NewCoffeeAction
     data class OnRatingChange(val rating: Double) : NewCoffeeAction
+    data class OnRoastDateSelected(val date: LocalDate) : NewCoffeeAction
     data object OnSaveClick : NewCoffeeAction
 }

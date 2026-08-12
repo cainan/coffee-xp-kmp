@@ -3,7 +3,6 @@ package com.cso.coffeexp.presentation.new_coffee
 import app.cash.turbine.test
 import androidx.compose.foundation.text.input.TextFieldState
 import com.cso.coffeexp.core.utils.LocalDate
-import com.cso.coffeexp.core.utils.toEpochMillisString
 import com.cso.coffeexp.testutil.FakeCoffeeRepository
 import com.cso.coffeexp.testutil.FakeCoffeeXpLogger
 import com.cso.coffeexp.testutil.coffeeFixture
@@ -15,7 +14,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -75,7 +73,7 @@ class NewCoffeeViewModelTest {
             assertEquals(coffee.origin, state.originState.text.toString())
             assertEquals(coffee.process, state.processState.text.toString())
             assertEquals(coffee.elevation, state.elevationState.text.toString())
-            assertEquals(coffee.roastDate.toEpochMillisString(), state.roastDateState.text.toString())
+            assertEquals(coffee.roastDate, state.roastDate)
             assertEquals(coffee.roastLevel, state.roastLevelState.text.toString())
             assertEquals(coffee.brewingMethod, state.brewingMethod)
             assertEquals(coffee.grindSize, state.grindSizeState.text.toString())
@@ -152,7 +150,58 @@ class NewCoffeeViewModelTest {
         assertEquals(41L, repository.upsertedCoffees.single().id)
     }
 
-    @Ignore
+    @Test
+    fun `selecting roast date updates state and persists selection`() = runTest {
+        val selectedDate = kotlinx.datetime.LocalDate(2026, 8, 1)
+        val repository = FakeCoffeeRepository()
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+
+        viewModel.state.test {
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnRoastDateSelected(selectedDate))
+            assertEquals(selectedDate, awaitItem().roastDate)
+
+            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(selectedDate, repository.upsertedCoffees.single().roastDate)
+    }
+
+    @Test
+    fun `saving an edited coffee preserves its original created date`() = runTest {
+        val original = coffeeFixture(id = 51L)
+        val repository = FakeCoffeeRepository().apply { coffeeById = original }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+
+        viewModel.state.test {
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(51L))
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(original.createdAt, repository.upsertedCoffees.single().createdAt)
+    }
+
+    @Test
+    fun `saving an edited coffee updates its last modified date`() = runTest {
+        val original = coffeeFixture(id = 52L)
+        val repository = FakeCoffeeRepository().apply { coffeeById = original }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+
+        viewModel.state.test {
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(52L))
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(LocalDate(), repository.upsertedCoffees.single().lastModifiedAt)
+    }
+
     @Test
     fun `saving an edited coffee persists every changed field`() = runTest {
         val original = coffeeFixture(id = 51L)
@@ -171,7 +220,8 @@ class NewCoffeeViewModelTest {
             state.processState.replaceText("Washed")
             state.elevationState.replaceText("1,800m")
             val changedRoastDate = kotlinx.datetime.LocalDate(2026, 8, 1)
-            state.roastDateState.replaceText(changedRoastDate.toEpochMillisString())
+            viewModel.onAction(NewCoffeeAction.OnRoastDateSelected(changedRoastDate))
+            awaitItem()
             state.roastLevelState.replaceText("Light")
             state.grindSizeState.replaceText("Fine")
             state.temperatureState.replaceText("96C")

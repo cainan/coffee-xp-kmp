@@ -31,6 +31,8 @@ import coffeexp.shared.generated.resources.Res
 import coffeexp.shared.generated.resources.app_name
 import coffeexp.shared.generated.resources.cd_back
 import coffeexp.shared.generated.resources.cd_upload_photo
+import coffeexp.shared.generated.resources.date_picker_cancel
+import coffeexp.shared.generated.resources.date_picker_confirm
 import coffeexp.shared.generated.resources.new_coffee_brewing_method_label
 import coffeexp.shared.generated.resources.new_coffee_brewing_specs
 import coffeexp.shared.generated.resources.new_coffee_capture_moment_subtitle
@@ -65,6 +67,7 @@ import coffeexp.shared.generated.resources.new_coffee_total_time_label
 import coffeexp.shared.generated.resources.new_coffee_visual_identity
 import com.cso.coffeexp.core.design_system.components.CoffeeXpCard
 import com.cso.coffeexp.core.design_system.components.CoffeeXpDropdownField
+import com.cso.coffeexp.core.design_system.components.CoffeeXpDatePickerField
 import com.cso.coffeexp.core.design_system.components.CoffeeXpFilledField
 import com.cso.coffeexp.core.design_system.components.CoffeeXpPrimaryButton
 import com.cso.coffeexp.core.design_system.components.CoffeeXpTopBar
@@ -75,6 +78,7 @@ import com.cso.coffeexp.core.design_system.components.StarRating
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.cso.coffeexp.core.utils.LocalDate
 
 @Composable
 fun NewCoffeeRoot(
@@ -179,11 +183,14 @@ fun NewCoffeeScreen(
                         state = state.elevationState,
                         placeholder = stringResource(Res.string.new_coffee_elevation_placeholder)
                     )
-                    // TODO: replace with a real M3 DatePickerDialog once the data layer lands.
-                    CoffeeXpUnderlinedField(
+                    CoffeeXpDatePickerField(
                         label = stringResource(Res.string.new_coffee_roast_date_label),
-                        state = state.roastDateState,
-                        placeholder = stringResource(Res.string.new_coffee_roast_date_placeholder)
+                        selectedDate = state.roastDate,
+                        onDateSelected = { onAction(NewCoffeeAction.OnRoastDateSelected(it)) },
+                        placeholder = stringResource(Res.string.new_coffee_roast_date_placeholder),
+                        maximumDate = LocalDate(),
+                        confirmText = stringResource(Res.string.date_picker_confirm),
+                        dismissText = stringResource(Res.string.date_picker_cancel),
                     )
                     CoffeeXpUnderlinedField(
                         label = stringResource(Res.string.new_coffee_roast_level_label),
