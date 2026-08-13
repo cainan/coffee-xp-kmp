@@ -1,5 +1,7 @@
 package com.cso.coffeexp.testutil
 
+import com.cso.coffeexp.core.error_handling.DataError
+import com.cso.coffeexp.core.error_handling.Result
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.domain.repository.CoffeeRepository
@@ -13,7 +15,7 @@ class FakeCoffeeRepository(
     private val coffeesFlow = MutableStateFlow(coffees)
 
     var coffeeById: Coffee? = null
-    var upsertResult: Long = 1L
+    var upsertResult: Result<Long, DataError.Local> = Result.Success(1L)
     var deleteResult: Int = 1
 
     val requestedIds = mutableListOf<Long>()
@@ -36,7 +38,7 @@ class FakeCoffeeRepository(
         return coffeesFlow
     }
 
-    override suspend fun upsertCoffee(coffee: Coffee): Long {
+    override suspend fun upsertCoffee(coffee: Coffee): Result<Long, DataError.Local> {
         upsertedCoffees += coffee
         return upsertResult
     }

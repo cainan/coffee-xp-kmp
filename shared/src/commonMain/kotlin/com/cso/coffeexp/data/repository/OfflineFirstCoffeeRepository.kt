@@ -1,6 +1,8 @@
 package com.cso.coffeexp.data.repository
 
-import com.cso.coffeexp.core.utils.LocalDate
+import com.cso.coffeexp.core.error_handling.DataError
+import com.cso.coffeexp.core.error_handling.Result
+import com.cso.coffeexp.core.error_handling.safeDatabaseUpdate
 import com.cso.coffeexp.data.mapper.toCoffee
 import com.cso.coffeexp.data.mapper.toCoffeeEntity
 import com.cso.coffeexp.database.CoffeeXpDatabase
@@ -21,8 +23,12 @@ class OfflineFirstCoffeeRepository(
             coffeeEntityList.map { it.toCoffee() }
         }
 
-    override suspend fun upsertCoffee(coffee: Coffee): Long =
-        db.getCoffeeDao().upsert(coffee.toCoffeeEntity())
+    override suspend fun upsertCoffee(coffee: Coffee): Result<Long, DataError.Local> {
+        return safeDatabaseUpdate {
+            db.getCoffeeDao().upsert(coffee.toCoffeeEntity())
+        }
+    }
+
 
     override suspend fun deleteCoffee(id: Long) = db.getCoffeeDao().deleteById(id)
 

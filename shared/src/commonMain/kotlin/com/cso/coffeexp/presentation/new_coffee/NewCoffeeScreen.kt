@@ -66,8 +66,8 @@ import coffeexp.shared.generated.resources.new_coffee_the_beans
 import coffeexp.shared.generated.resources.new_coffee_total_time_label
 import coffeexp.shared.generated.resources.new_coffee_visual_identity
 import com.cso.coffeexp.core.design_system.components.CoffeeXpCard
-import com.cso.coffeexp.core.design_system.components.CoffeeXpDropdownField
 import com.cso.coffeexp.core.design_system.components.CoffeeXpDatePickerField
+import com.cso.coffeexp.core.design_system.components.CoffeeXpDropdownField
 import com.cso.coffeexp.core.design_system.components.CoffeeXpFilledField
 import com.cso.coffeexp.core.design_system.components.CoffeeXpPrimaryButton
 import com.cso.coffeexp.core.design_system.components.CoffeeXpTopBar
@@ -76,9 +76,10 @@ import com.cso.coffeexp.core.design_system.components.PhotoUploadBox
 import com.cso.coffeexp.core.design_system.components.SectionHeader
 import com.cso.coffeexp.core.design_system.components.StarRating
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
+import com.cso.coffeexp.core.design_system.utils.ObserveAsEvents
+import com.cso.coffeexp.core.utils.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import com.cso.coffeexp.core.utils.LocalDate
 
 @Composable
 fun NewCoffeeRoot(
@@ -87,6 +88,14 @@ fun NewCoffeeRoot(
     onBackClick: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            NewCoffeeEvent.AddedSuccessfully -> {
+                onBackClick()
+            }
+        }
+    }
 
     LaunchedEffect(coffeeToEdit) {
         coffeeToEdit?.let {

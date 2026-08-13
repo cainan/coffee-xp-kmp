@@ -2,6 +2,8 @@ package com.cso.coffeexp.presentation.new_coffee
 
 import app.cash.turbine.test
 import androidx.compose.foundation.text.input.TextFieldState
+import com.cso.coffeexp.core.error_handling.DataError
+import com.cso.coffeexp.core.error_handling.Result
 import com.cso.coffeexp.core.utils.LocalDate
 import com.cso.coffeexp.testutil.FakeCoffeeRepository
 import com.cso.coffeexp.testutil.FakeCoffeeXpLogger
@@ -111,7 +113,11 @@ class NewCoffeeViewModelTest {
             awaitItem()
             viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(31L))
             awaitItem()
-            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            viewModel.events.test {
+                viewModel.onAction(NewCoffeeAction.OnSaveClick)
+                assertEquals(NewCoffeeEvent.AddedSuccessfully, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -143,7 +149,11 @@ class NewCoffeeViewModelTest {
             awaitItem()
             viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(41L))
             awaitItem()
-            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            viewModel.events.test {
+                viewModel.onAction(NewCoffeeAction.OnSaveClick)
+                assertEquals(NewCoffeeEvent.AddedSuccessfully, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -161,7 +171,11 @@ class NewCoffeeViewModelTest {
             viewModel.onAction(NewCoffeeAction.OnRoastDateSelected(selectedDate))
             assertEquals(selectedDate, awaitItem().roastDate)
 
-            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            viewModel.events.test {
+                viewModel.onAction(NewCoffeeAction.OnSaveClick)
+                assertEquals(NewCoffeeEvent.AddedSuccessfully, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -178,7 +192,11 @@ class NewCoffeeViewModelTest {
             awaitItem()
             viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(51L))
             awaitItem()
-            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            viewModel.events.test {
+                viewModel.onAction(NewCoffeeAction.OnSaveClick)
+                assertEquals(NewCoffeeEvent.AddedSuccessfully, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -195,7 +213,11 @@ class NewCoffeeViewModelTest {
             awaitItem()
             viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(52L))
             awaitItem()
-            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            viewModel.events.test {
+                viewModel.onAction(NewCoffeeAction.OnSaveClick)
+                assertEquals(NewCoffeeEvent.AddedSuccessfully, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -235,7 +257,11 @@ class NewCoffeeViewModelTest {
             awaitItem()
             viewModel.onAction(NewCoffeeAction.OnRatingChange(9.5))
             awaitItem()
-            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            viewModel.events.test {
+                viewModel.onAction(NewCoffeeAction.OnSaveClick)
+                assertEquals(NewCoffeeEvent.AddedSuccessfully, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
             cancelAndIgnoreRemainingEvents()
 
             val saved = repository.upsertedCoffees.single()
@@ -259,6 +285,22 @@ class NewCoffeeViewModelTest {
             assertEquals(original.createdAt, saved.createdAt)
             assertEquals(LocalDate(), saved.lastModifiedAt)
         }
+    }
+
+    @Test
+    fun `failed save records attempt and does not emit success event`() = runTest {
+        val repository = FakeCoffeeRepository().apply {
+            upsertResult = Result.Failure(DataError.Local.UNKNOWN)
+        }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+
+        viewModel.events.test {
+            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(1, repository.upsertedCoffees.size)
     }
 
     private fun TextFieldState.replaceText(value: String) {

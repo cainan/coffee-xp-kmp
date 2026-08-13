@@ -3,13 +3,17 @@ package com.cso.coffeexp.presentation.new_coffee
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cso.coffeexp.core.error_handling.onFailure
+import com.cso.coffeexp.core.error_handling.onSuccess
 import com.cso.coffeexp.core.utils.LocalDate
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.domain.repository.CoffeeRepository
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -20,6 +24,9 @@ class NewCoffeeViewModel(
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
+
+    private val eventChannel = Channel<NewCoffeeEvent>()
+    val events = eventChannel.receiveAsFlow()
 
     private val _state = MutableStateFlow(NewCoffeeState())
     val state = _state
@@ -131,7 +138,12 @@ class NewCoffeeViewModel(
                     createdAt = _state.value.createdAt ?: LocalDate(),
                     lastModifiedAt = LocalDate()
                 )
-            )
+            ).onSuccess {
+                logger.debug("Successfully upserted a coffee")
+                eventChannel.send(NewCoffeeEvent.AddedSuccessfully)
+            }.onFailure {
+                logger.debug("Fail to upsert a coffee")
+            }
 
             // TODO check db transaction result
             // TODO implement back action when success
