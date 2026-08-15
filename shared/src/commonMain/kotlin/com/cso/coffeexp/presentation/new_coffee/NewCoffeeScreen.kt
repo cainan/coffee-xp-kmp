@@ -67,7 +67,6 @@ import coffeexp.shared.generated.resources.new_coffee_total_time_label
 import coffeexp.shared.generated.resources.new_coffee_visual_identity
 import com.cso.coffeexp.core.design_system.components.CoffeeXpCard
 import com.cso.coffeexp.core.design_system.components.CoffeeXpDatePickerField
-import com.cso.coffeexp.core.design_system.components.CoffeeXpDropdownField
 import com.cso.coffeexp.core.design_system.components.CoffeeXpFilledField
 import com.cso.coffeexp.core.design_system.components.CoffeeXpPrimaryButton
 import com.cso.coffeexp.core.design_system.components.CoffeeXpTopBar
@@ -218,19 +217,10 @@ fun NewCoffeeScreen(
                     modifier = Modifier.padding(top = CoffeeXpTheme.spacing.stackSm),
                     verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackSm)
                 ) {
-                    CoffeeXpDropdownField(
+                    CoffeeXpFilledField(
                         label = stringResource(Res.string.new_coffee_brewing_method_label),
-                        selectedValue = state.brewingMethod,
-                        options = state.brewingMethodOptions,
-                        expanded = state.isBrewingMethodExpanded,
-                        onExpandedChange = {
-                            onAction(
-                                NewCoffeeAction.OnBrewingMethodExpandedChange(
-                                    it
-                                )
-                            )
-                        },
-                        onOptionSelected = { onAction(NewCoffeeAction.OnBrewingMethodSelected(it)) }
+                        state = state.brewingMethod,
+                        keyboardType = KeyboardType.Text
                     )
                     CoffeeXpFilledField(
                         label = stringResource(Res.string.new_coffee_grind_size_label),
@@ -291,7 +281,8 @@ fun NewCoffeeScreen(
                 text = stringResource(Res.string.new_coffee_save_button),
                 onClick = { onAction(NewCoffeeAction.OnSaveClick) },
                 icon = Icons.Filled.Save,
-                modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base)
+                modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base),
+                enabled = state.isSaveEnabled
             )
         }
     }
@@ -304,7 +295,7 @@ private fun Preview() {
         NewCoffeeScreen(
             state = NewCoffeeState(
                 coffeeNameState = TextFieldState("Ethiopian Yirgacheffe"),
-                brewingMethod = "V60 Pour-over",
+                brewingMethod = TextFieldState("V60 Pour-over"),
                 grindSizeState = TextFieldState("24"),
                 temperatureState = TextFieldState("94"),
                 ratioState = TextFieldState("1:16"),

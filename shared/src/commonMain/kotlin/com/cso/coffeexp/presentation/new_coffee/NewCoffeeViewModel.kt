@@ -1,6 +1,7 @@
 package com.cso.coffeexp.presentation.new_coffee
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cso.coffeexp.core.error_handling.onFailure
@@ -12,6 +13,9 @@ import com.cso.coffeexp.domain.repository.CoffeeRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -32,7 +36,7 @@ class NewCoffeeViewModel(
     val state = _state
         .onStart {
             if (!hasLoadedInitialData) {
-                /** Load initial data here **/
+                observeIfCanSave()
                 hasLoadedInitialData = true
             }
         }
@@ -42,17 +46,27 @@ class NewCoffeeViewModel(
             initialValue = NewCoffeeState()
         )
 
+    private fun observeIfCanSave() {
+        snapshotFlow {
+            val current = _state.value
+            current.coffeeNameState.text.isNotBlank() &&
+                    current.roasterState.text.isNotBlank() &&
+                    current.originState.text.isNotBlank() &&
+                    current.roastLevelState.text.isNotBlank() &&
+                    current.brewingMethod.text.isNotBlank()
+        }
+            .distinctUntilChanged()
+            .onEach { canSave ->
+                _state.update {
+                    it.copy(
+                        isSaveEnabled = canSave
+                    )
+                }
+            }.launchIn(viewModelScope)
+    }
+
     fun onAction(action: NewCoffeeAction) {
         when (action) {
-            is NewCoffeeAction.OnBrewingMethodExpandedChange -> _state.update {
-                it.copy(
-                    isBrewingMethodExpanded = action.expanded
-                )
-            }
-
-            is NewCoffeeAction.OnBrewingMethodSelected -> _state.update {
-                it.copy(brewingMethod = action.value, isBrewingMethodExpanded = false)
-            }
 
             is NewCoffeeAction.OnRatingChange -> _state.update { it.copy(overallRating = action.rating) }
 
@@ -83,31 +97,40 @@ class NewCoffeeViewModel(
     private fun onCoffeeToEditSelected(coffeeId: Long) {
         viewModelScope.launch {
             coffeeRepository.getCoffeeById(coffeeId)?.let { coffeeToEdit ->
+                val current = _state.value
+
+                current.coffeeNameState.replaceText(coffeeToEdit.name)
+                current.roasterState.replaceText(coffeeToEdit.roaster)
+                current.seriesCollectionState.replaceText(coffeeToEdit.series.orEmpty())
+                current.originState.replaceText(coffeeToEdit.origin)
+                current.processState.replaceText(coffeeToEdit.process.orEmpty())
+                current.elevationState.replaceText(coffeeToEdit.elevation.orEmpty())
+                current.roastLevelState.replaceText(coffeeToEdit.roastLevel)
+                current.brewingMethod.replaceText(coffeeToEdit.brewingMethod)
+                current.grindSizeState.replaceText(coffeeToEdit.grindSize.orEmpty())
+                current.temperatureState.replaceText(coffeeToEdit.temperature.orEmpty())
+                current.ratioState.replaceText(coffeeToEdit.ratio.orEmpty())
+                current.brewDuration.replaceText(coffeeToEdit.brewTime.orEmpty())
+                current.tastingNotesState.replaceText(coffeeToEdit.notes.orEmpty())
+
                 _state.update {
                     it.copy(
                         coffeeId = coffeeToEdit.id,
                         photoUri = coffeeToEdit.imageUrl,
-                        coffeeNameState = TextFieldState(coffeeToEdit.name),
-                        roasterState = TextFieldState(coffeeToEdit.roaster),
-                        seriesCollectionState = TextFieldState(coffeeToEdit.series ?: ""),
-                        originState = TextFieldState(coffeeToEdit.origin),
-                        processState = TextFieldState(coffeeToEdit.process ?: ""),
-                        elevationState = TextFieldState(coffeeToEdit.elevation ?: ""),
                         roastDate = coffeeToEdit.roastDate,
-                        roastLevelState = TextFieldState(coffeeToEdit.roastLevel),
-                        brewingMethod = coffeeToEdit.brewingMethod,
-                        grindSizeState = TextFieldState(coffeeToEdit.grindSize ?: ""),
-                        temperatureState = TextFieldState(coffeeToEdit.temperature ?: ""),
-                        ratioState = TextFieldState(coffeeToEdit.ratio ?: ""),
-                        brewDuration = TextFieldState(coffeeToEdit.brewTime ?: ""),
                         overallRating = coffeeToEdit.rating,
-                        tastingNotesState = TextFieldState(coffeeToEdit.notes ?: ""),
                         createdAt = coffeeToEdit.createdAt,
                         lastModifiedAt = coffeeToEdit.lastModifiedAt
                     )
                 }
 
             }
+        }
+    }
+
+    private fun TextFieldState.replaceText(value: String) {
+        edit {
+            replace(0, length, value)
         }
     }
 
@@ -120,21 +143,21 @@ class NewCoffeeViewModel(
                 coffee = Coffee(
                     id = _state.value.coffeeId,
                     imageUrl = _state.value.photoUri,
-                    name = _state.value.coffeeNameState.text.toString(),
-                    roaster = _state.value.roasterState.text.toString(),
-                    series = _state.value.seriesCollectionState.text.toString(),
-                    origin = _state.value.originState.text.toString(),
-                    process = _state.value.processState.text.toString(),
-                    elevation = _state.value.elevationState.text.toString(),
+                    name = _state.value.coffeeNameState.text.toString().trim(),
+                    roaster = _state.value.roasterState.text.toString().trim(),
+                    series = _state.value.seriesCollectionState.text.toString().trim(),
+                    origin = _state.value.originState.text.toString().trim(),
+                    process = _state.value.processState.text.toString().trim(),
+                    elevation = _state.value.elevationState.text.toString().trim(),
                     roastDate = _state.value.roastDate,
-                    roastLevel = _state.value.roastLevelState.text.toString(),
-                    brewingMethod = _state.value.brewingMethod,
-                    grindSize = _state.value.grindSizeState.text.toString(),
-                    temperature = _state.value.temperatureState.text.toString(),
-                    ratio = _state.value.ratioState.text.toString(),
-                    brewTime = _state.value.brewDuration.text.toString(),
+                    roastLevel = _state.value.roastLevelState.text.toString().trim(),
+                    brewingMethod = _state.value.brewingMethod.text.toString().trim(),
+                    grindSize = _state.value.grindSizeState.text.toString().trim(),
+                    temperature = _state.value.temperatureState.text.toString().trim(),
+                    ratio = _state.value.ratioState.text.toString().trim(),
+                    brewTime = _state.value.brewDuration.text.toString().trim(),
                     rating = _state.value.overallRating,
-                    notes = _state.value.tastingNotesState.text.toString(),
+                    notes = _state.value.tastingNotesState.text.toString().trim(),
                     createdAt = _state.value.createdAt ?: LocalDate(),
                     lastModifiedAt = LocalDate()
                 )

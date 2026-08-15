@@ -17,17 +17,7 @@ data class NewCoffeeState(
     val elevationState: TextFieldState = TextFieldState(),
     val roastDate: LocalDate = LocalDate(),
     val roastLevelState: TextFieldState = TextFieldState(),
-    val isBrewingMethodExpanded: Boolean = false,
-    val brewingMethod: String = "",
-    val brewingMethodOptions: List<String> = listOf(
-        "V60 Pour-over",
-        "Aeropress",
-        "French Press",
-        "Chemex",
-        "Espresso",
-        "Moka Pot",
-        "Cold Brew",
-    ),
+    val brewingMethod: TextFieldState = TextFieldState(),
     val grindSizeState: TextFieldState = TextFieldState(),
     val temperatureState: TextFieldState = TextFieldState(),
     val ratioState: TextFieldState = TextFieldState(),
@@ -37,4 +27,5 @@ data class NewCoffeeState(
 
     val createdAt: LocalDate? = null,
     val lastModifiedAt: LocalDate? = null,
+    val isSaveEnabled : Boolean = false,
 )

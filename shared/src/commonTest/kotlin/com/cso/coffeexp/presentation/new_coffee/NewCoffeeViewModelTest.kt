@@ -1,7 +1,8 @@
 package com.cso.coffeexp.presentation.new_coffee
 
-import app.cash.turbine.test
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.snapshots.Snapshot
+import app.cash.turbine.test
 import com.cso.coffeexp.core.error_handling.DataError
 import com.cso.coffeexp.core.error_handling.Result
 import com.cso.coffeexp.core.utils.LocalDate
@@ -20,6 +21,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewCoffeeViewModelTest {
@@ -41,14 +43,6 @@ class NewCoffeeViewModelTest {
 
         viewModel.state.test {
             awaitItem()
-
-            viewModel.onAction(NewCoffeeAction.OnBrewingMethodExpandedChange(true))
-            assertEquals(true, awaitItem().isBrewingMethodExpanded)
-
-            viewModel.onAction(NewCoffeeAction.OnBrewingMethodSelected("Aeropress"))
-            val selected = awaitItem()
-            assertEquals("Aeropress", selected.brewingMethod)
-            assertFalse(selected.isBrewingMethodExpanded)
 
             viewModel.onAction(NewCoffeeAction.OnRatingChange(9.0))
             assertEquals(9.0, awaitItem().overallRating)
@@ -77,7 +71,7 @@ class NewCoffeeViewModelTest {
             assertEquals(coffee.elevation, state.elevationState.text.toString())
             assertEquals(coffee.roastDate, state.roastDate)
             assertEquals(coffee.roastLevel, state.roastLevelState.text.toString())
-            assertEquals(coffee.brewingMethod, state.brewingMethod)
+            assertEquals(coffee.brewingMethod, state.brewingMethod.text.toString())
             assertEquals(coffee.grindSize, state.grindSizeState.text.toString())
             assertEquals(coffee.temperature, state.temperatureState.text.toString())
             assertEquals(coffee.ratio, state.ratioState.text.toString())
@@ -101,6 +95,80 @@ class NewCoffeeViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
         assertEquals(listOf(404L), repository.requestedIds)
+    }
+
+    @Test
+    fun `save starts disabled`() = runTest {
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository())
+
+        viewModel.state.test {
+            assertFalse(awaitItem().isSaveEnabled)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `save becomes enabled when all required fields are filled`() = runTest {
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository())
+
+        viewModel.state.test {
+            val state = awaitItem()
+
+            state.coffeeNameState.replaceText("Geisha")
+            state.roasterState.replaceText("Coffee Lab")
+            state.originState.replaceText("Panama")
+            state.roastLevelState.replaceText("Light")
+            state.brewingMethod.replaceText("V60")
+            Snapshot.sendApplyNotifications()
+
+            assertTrue(awaitItem().isSaveEnabled)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `save becomes disabled when a required field is cleared`() = runTest {
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository())
+
+        viewModel.state.test {
+            val state = awaitItem()
+
+            state.coffeeNameState.replaceText("Geisha")
+            state.roasterState.replaceText("Coffee Lab")
+            state.originState.replaceText("Panama")
+            state.roastLevelState.replaceText("Light")
+            state.brewingMethod.replaceText("V60")
+            Snapshot.sendApplyNotifications()
+            assertTrue(awaitItem().isSaveEnabled)
+
+            state.originState.replaceText("   ")
+            Snapshot.sendApplyNotifications()
+
+            assertFalse(awaitItem().isSaveEnabled)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `selecting existing coffee enables save when required fields are filled`() = runTest {
+        val coffee = coffeeFixture(id = 22L)
+        val repository = FakeCoffeeRepository().apply { coffeeById = coffee }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+
+        viewModel.state.test {
+            assertFalse(awaitItem().isSaveEnabled)
+
+            viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(22L))
+            Snapshot.sendApplyNotifications()
+
+            var editedState = awaitItem()
+            while (editedState.coffeeId != coffee.id || !editedState.isSaveEnabled) {
+                editedState = awaitItem()
+            }
+
+            assertTrue(editedState.isSaveEnabled)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -252,8 +320,7 @@ class NewCoffeeViewModelTest {
             state.tastingNotesState.replaceText("Jasmine and bergamot")
             val changedPhotoUri = "file:///coffee/geisha.jpg"
             viewModel.onAction(NewCoffeeAction.OnPhotoSelected(changedPhotoUri))
-            awaitItem()
-            viewModel.onAction(NewCoffeeAction.OnBrewingMethodSelected("Chemex"))
+            state.brewingMethod.replaceText("Chemex")
             awaitItem()
             viewModel.onAction(NewCoffeeAction.OnRatingChange(9.5))
             awaitItem()
