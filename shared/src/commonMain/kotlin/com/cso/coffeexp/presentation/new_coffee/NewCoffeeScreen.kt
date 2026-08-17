@@ -281,6 +281,7 @@ fun NewCoffeeScreen(
                 text = stringResource(Res.string.new_coffee_save_button),
                 onClick = { onAction(NewCoffeeAction.OnSaveClick) },
                 icon = Icons.Filled.Save,
+                isLoading = state.isSaving,
                 modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base),
                 enabled = state.isSaveEnabled
             )

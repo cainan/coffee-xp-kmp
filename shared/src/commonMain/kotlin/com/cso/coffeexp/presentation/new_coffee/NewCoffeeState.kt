@@ -27,5 +27,6 @@ data class NewCoffeeState(
 
     val createdAt: LocalDate? = null,
     val lastModifiedAt: LocalDate? = null,
-    val isSaveEnabled : Boolean = false,
+    val isSaveEnabled: Boolean = false,
+    val isSaving: Boolean = false
 )

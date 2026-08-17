@@ -135,7 +135,18 @@ class NewCoffeeViewModel(
     }
 
     private fun saveCoffee() {
+
+        if (_state.value.isSaving) {
+            return
+        }
+
         viewModelScope.launch {
+
+            _state.update {
+                it.copy(
+                    isSaving = true
+                )
+            }
 
             // TODO validate fields
 
@@ -168,8 +179,11 @@ class NewCoffeeViewModel(
                 logger.debug("Fail to upsert a coffee")
             }
 
-            // TODO check db transaction result
-            // TODO implement back action when success
+            _state.update {
+                it.copy(
+                    isSaving = false
+                )
+            }
         }
     }
 }
