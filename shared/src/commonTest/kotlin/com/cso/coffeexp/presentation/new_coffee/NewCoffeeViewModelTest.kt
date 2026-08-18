@@ -5,12 +5,14 @@ import androidx.compose.runtime.snapshots.Snapshot
 import app.cash.turbine.test
 import com.cso.coffeexp.core.error_handling.DataError
 import com.cso.coffeexp.core.error_handling.Result
+import com.cso.coffeexp.core.design_system.utils.UiText
 import com.cso.coffeexp.core.utils.LocalDate
 import com.cso.coffeexp.testutil.FakeCoffeeRepository
 import com.cso.coffeexp.testutil.FakeCoffeeXpLogger
 import com.cso.coffeexp.testutil.coffeeFixture
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -22,6 +24,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.error_unknown
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewCoffeeViewModelTest {
@@ -355,19 +359,81 @@ class NewCoffeeViewModelTest {
     }
 
     @Test
-    fun `failed save records attempt and does not emit success event`() = runTest {
+    fun `failed save shows error and stops loading without emitting success event`() = runTest {
         val repository = FakeCoffeeRepository().apply {
             upsertResult = Result.Failure(DataError.Local.UNKNOWN)
         }
         val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
 
-        viewModel.events.test {
-            viewModel.onAction(NewCoffeeAction.OnSaveClick)
-            expectNoEvents()
+        viewModel.state.test {
+            awaitItem()
+
+            viewModel.events.test {
+                viewModel.onAction(NewCoffeeAction.OnSaveClick)
+                expectNoEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            val failedState = awaitItem()
+            assertFalse(failedState.isSaving)
+            val errorMessage = failedState.errorMessage as UiText.Resource
+            assertEquals(Res.string.error_unknown, errorMessage.id)
             cancelAndIgnoreRemainingEvents()
         }
 
         assertEquals(1, repository.upsertedCoffees.size)
+    }
+
+    @Test
+    fun `new save attempt clears previous error while repository is working`() = runTest {
+        val repository = FakeCoffeeRepository().apply {
+            upsertResult = Result.Failure(DataError.Local.UNKNOWN)
+        }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+
+        viewModel.state.test {
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            assertTrue(awaitItem().errorMessage != null)
+
+            repository.upsertBarrier = CompletableDeferred()
+            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+
+            val savingState = awaitItem()
+            assertTrue(savingState.isSaving)
+            assertNull(savingState.errorMessage)
+
+            repository.upsertBarrier?.complete(Unit)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `successful retry leaves no error and emits success event`() = runTest {
+        val repository = FakeCoffeeRepository().apply {
+            upsertResult = Result.Failure(DataError.Local.UNKNOWN)
+        }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+
+        viewModel.state.test {
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnSaveClick)
+            assertTrue(awaitItem().errorMessage != null)
+
+            repository.upsertResult = Result.Success(1L)
+            viewModel.events.test {
+                viewModel.onAction(NewCoffeeAction.OnSaveClick)
+                assertEquals(NewCoffeeEvent.AddedSuccessfully, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            var successfulState = awaitItem()
+            while (successfulState.isSaving) {
+                successfulState = awaitItem()
+            }
+            assertNull(successfulState.errorMessage)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     private fun TextFieldState.replaceText(value: String) {

@@ -16,6 +16,14 @@
     <string name="date_picker_confirm">OK</string>
     <string name="date_picker_cancel">Cancel</string>
 
+    <string name="error_disk_full">There isn't enough storage space to save this coffee.</string>
+    <string name="error_not_found">The requested information could not be found.</string>
+    <string name="error_connection">Check your connection and try again.</string>
+    <string name="error_request_timeout">The request took too long. Please try again.</string>
+    <string name="error_unauthorized">You don't have permission to complete this action.</string>
+    <string name="error_server">The service is temporarily unavailable. Please try again.</string>
+    <string name="error_unknown">We couldn't save your journal entry. Your information is still here, so please try again.</string>
+
     <string name="new_coffee_visual_identity">Visual Identity</string>
     <string name="new_coffee_capture_moment_title">Capture the Moment</string>
     <string name="new_coffee_capture_moment_subtitle">Tap to upload a photo of your bag or brew</string>

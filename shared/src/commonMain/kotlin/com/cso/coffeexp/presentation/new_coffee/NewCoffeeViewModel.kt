@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cso.coffeexp.core.error_handling.onFailure
 import com.cso.coffeexp.core.error_handling.onSuccess
+import com.cso.coffeexp.core.utils.toUiText
 import com.cso.coffeexp.core.utils.LocalDate
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.model.Coffee
@@ -144,7 +145,8 @@ class NewCoffeeViewModel(
 
             _state.update {
                 it.copy(
-                    isSaving = true
+                    isSaving = true,
+                    errorMessage = null,
                 )
             }
 
@@ -174,15 +176,16 @@ class NewCoffeeViewModel(
                 )
             ).onSuccess {
                 logger.debug("Successfully upserted a coffee")
+                _state.update { current -> current.copy(isSaving = false) }
                 eventChannel.send(NewCoffeeEvent.AddedSuccessfully)
-            }.onFailure {
+            }.onFailure { error ->
                 logger.debug("Fail to upsert a coffee")
-            }
-
-            _state.update {
-                it.copy(
-                    isSaving = false
-                )
+                _state.update { current ->
+                    current.copy(
+                        isSaving = false,
+                        errorMessage = error.toUiText(),
+                    )
+                }
             }
         }
     }

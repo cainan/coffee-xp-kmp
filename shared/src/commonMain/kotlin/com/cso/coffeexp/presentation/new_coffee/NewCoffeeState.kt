@@ -2,6 +2,7 @@ package com.cso.coffeexp.presentation.new_coffee
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Stable
+import com.cso.coffeexp.core.design_system.utils.UiText
 import com.cso.coffeexp.core.utils.LocalDate
 import kotlinx.datetime.LocalDate
 
@@ -28,5 +29,6 @@ data class NewCoffeeState(
     val createdAt: LocalDate? = null,
     val lastModifiedAt: LocalDate? = null,
     val isSaveEnabled: Boolean = false,
-    val isSaving: Boolean = false
+    val isSaving: Boolean = false,
+    val errorMessage: UiText? = null,
 )

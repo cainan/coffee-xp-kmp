@@ -67,6 +67,7 @@ import coffeexp.shared.generated.resources.new_coffee_total_time_label
 import coffeexp.shared.generated.resources.new_coffee_visual_identity
 import com.cso.coffeexp.core.design_system.components.CoffeeXpCard
 import com.cso.coffeexp.core.design_system.components.CoffeeXpDatePickerField
+import com.cso.coffeexp.core.design_system.components.CoffeeXpMessageBanner
 import com.cso.coffeexp.core.design_system.components.CoffeeXpFilledField
 import com.cso.coffeexp.core.design_system.components.CoffeeXpPrimaryButton
 import com.cso.coffeexp.core.design_system.components.CoffeeXpTopBar
@@ -277,13 +278,17 @@ fun NewCoffeeScreen(
                 }
             }
 
+            state.errorMessage?.let { errorMessage ->
+                CoffeeXpMessageBanner(message = errorMessage.asString())
+            }
+
             CoffeeXpPrimaryButton(
                 text = stringResource(Res.string.new_coffee_save_button),
                 onClick = { onAction(NewCoffeeAction.OnSaveClick) },
                 icon = Icons.Filled.Save,
                 isLoading = state.isSaving,
                 modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base),
-                enabled = state.isSaveEnabled
+                enabled = state.isSaveEnabled && !state.isSaving
             )
         }
     }

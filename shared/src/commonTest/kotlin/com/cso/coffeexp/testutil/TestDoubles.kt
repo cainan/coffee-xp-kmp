@@ -7,6 +7,7 @@ import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.domain.repository.CoffeeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.datetime.LocalDate
 
 class FakeCoffeeRepository(
@@ -16,6 +17,7 @@ class FakeCoffeeRepository(
 
     var coffeeById: Coffee? = null
     var upsertResult: Result<Long, DataError.Local> = Result.Success(1L)
+    var upsertBarrier: CompletableDeferred<Unit>? = null
     var deleteResult: Int = 1
 
     val requestedIds = mutableListOf<Long>()
@@ -40,6 +42,7 @@ class FakeCoffeeRepository(
 
     override suspend fun upsertCoffee(coffee: Coffee): Result<Long, DataError.Local> {
         upsertedCoffees += coffee
+        upsertBarrier?.await()
         return upsertResult
     }
 
