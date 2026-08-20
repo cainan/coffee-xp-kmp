@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -71,6 +73,7 @@ import com.cso.coffeexp.core.design_system.components.StarRating
 import com.cso.coffeexp.core.design_system.components.StatItem
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.domain.mock.mockCoffee
+import com.cso.coffeexp.domain.model.Coffee
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -109,19 +112,20 @@ fun DetailsScreen(
     state: DetailsState,
     onAction: (DetailsAction) -> Unit,
 ) {
-    val details = state.coffee
 
-    state.coffee?.let {
 
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                CoffeeXpTopBar(
-                    title = stringResource(Res.string.app_name),
-                    onBackClick = { onAction(DetailsAction.OnBackClick) },
-                    backContentDescription = stringResource(Res.string.cd_back),
-                    actions = {
-                        TextButton(onClick = { onAction(DetailsAction.OnEditClick(state.coffee.id!!)) }) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            CoffeeXpTopBar(
+                title = stringResource(Res.string.app_name),
+                onBackClick = { onAction(DetailsAction.OnBackClick) },
+                backContentDescription = stringResource(Res.string.cd_back),
+                actions = {
+                    state.coffee?.id?.let { coffeeId ->
+                        TextButton(
+                            onClick = { onAction(DetailsAction.OnEditClick(coffeeId)) }
+                        ) {
                             Icon(
                                 imageVector = Icons.Filled.Edit,
                                 contentDescription = stringResource(Res.string.cd_edit_coffee),
@@ -130,134 +134,156 @@ fun DetailsScreen(
                             Text(stringResource(Res.string.details_edit_button))
                         }
                     }
-                )
-            }
-        ) { innerPadding ->
-            Column(
+                }
+            )
+        }
+    ) { innerPadding ->
+
+        if (state.isLoading) {
+            Box(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                CoffeeHeroHeader(
-                    imageUrl = details.imageUrl,
-                    eyebrow = details.series,
-                    title = details.name,
-                    subtitle = details.roaster,
-                    imageContentDescription = details.name
+                CircularProgressIndicator()
+            }
+        } else {
+            state.coffee?.let { details ->
+                CoffeeDetailSection(innerPadding, details)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CoffeeDetailSection(
+    innerPadding: PaddingValues,
+    coffeeDetails: Coffee
+) {
+    Column(
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        CoffeeHeroHeader(
+            imageUrl = coffeeDetails.imageUrl,
+            eyebrow = coffeeDetails.series,
+            title = coffeeDetails.name,
+            subtitle = coffeeDetails.roaster,
+            imageContentDescription = coffeeDetails.name
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = CoffeeXpTheme.spacing.marginMobile)
+                .padding(
+                    top = CoffeeXpTheme.spacing.stackMd,
+                    bottom = CoffeeXpTheme.spacing.stackLg
+                ),
+            verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)) {
+                Text(
+                    text = stringResource(Res.string.details_brew_profile),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = CoffeeXpTheme.spacing.marginMobile)
-                        .padding(
-                            top = CoffeeXpTheme.spacing.stackMd,
-                            bottom = CoffeeXpTheme.spacing.stackLg
-                        ),
-                    verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)) {
-                        Text(
-                            text = stringResource(Res.string.details_brew_profile),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        BrewProfileRow(
-                            first = Triple(
-                                Icons.Filled.Coffee,
-                                stringResource(Res.string.details_method_label),
-                                details.brewingMethod
-                            ),
-                            second = Triple(
-                                Icons.Filled.WaterDrop,
-                                stringResource(Res.string.details_ratio_label),
-                                details.ratio ?: "-"
-                            )
-                        )
-                        BrewProfileRow(
-                            first = Triple(
-                                Icons.Filled.Timer,
-                                stringResource(Res.string.details_total_time_label),
-                                details.brewTime ?: "-"
-                            ),
-                            second = Triple(
-                                Icons.Filled.Thermostat,
-                                stringResource(Res.string.details_temp_label),
-                                details.temperature.toString()
-                            )
-                        )
-                        BrewProfileRow(
-                            first = Triple(
-                                Icons.Filled.Tune,
-                                stringResource(Res.string.details_grind_size_label),
-                                details.grindSize ?: "-"
-                            ),
-                            second = Triple(
-                                Icons.Filled.LocalFireDepartment,
-                                stringResource(Res.string.details_roast_level_label),
-                                details.roastLevel
-                            )
-                        )
-                    }
-
-                    FinalAssessmentCard(
-                        rating = details.rating,
-                        notes = details.notes ?: ""
+                BrewProfileRow(
+                    first = Triple(
+                        Icons.Filled.Coffee,
+                        stringResource(Res.string.details_method_label),
+                        coffeeDetails.brewingMethod
+                    ),
+                    second = Triple(
+                        Icons.Filled.WaterDrop,
+                        stringResource(Res.string.details_ratio_label),
+                        coffeeDetails.ratio ?: "-"
                     )
+                )
+                BrewProfileRow(
+                    first = Triple(
+                        Icons.Filled.Timer,
+                        stringResource(Res.string.details_total_time_label),
+                        coffeeDetails.brewTime ?: "-"
+                    ),
+                    second = Triple(
+                        Icons.Filled.Thermostat,
+                        stringResource(Res.string.details_temp_label),
+                        coffeeDetails.temperature.toString()
+                    )
+                )
+                BrewProfileRow(
+                    first = Triple(
+                        Icons.Filled.Tune,
+                        stringResource(Res.string.details_grind_size_label),
+                        coffeeDetails.grindSize ?: "-"
+                    ),
+                    second = Triple(
+                        Icons.Filled.LocalFireDepartment,
+                        stringResource(Res.string.details_roast_level_label),
+                        coffeeDetails.roastLevel
+                    )
+                )
+            }
 
-                    CoffeeXpCard {
-                        Row(verticalAlignment = Alignment.Top) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Article,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 2.dp)
-                            )
-                            Spacer(modifier = Modifier.width(CoffeeXpTheme.spacing.base))
-                            Text(
-                                text = stringResource(Res.string.details_user_logged_info),
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        Column(
-                            modifier = Modifier.padding(top = CoffeeXpTheme.spacing.stackSm),
-                            verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackSm)
-                        ) {
+            FinalAssessmentCard(
+                rating = coffeeDetails.rating,
+                notes = coffeeDetails.notes ?: ""
+            )
 
-                            InfoRow(
-                                label = stringResource(Res.string.details_origin_label),
-                                value = details.origin
-                            )
-
-                            InfoRow(
-                                label = stringResource(Res.string.details_process_label),
-                                value = details.process ?: "-"
-                            )
-
-                            InfoRow(
-                                label = stringResource(Res.string.details_elevation_label),
-                                value = details.elevation ?: "-"
-                            )
-
-                            InfoRow(
-                                label = stringResource(Res.string.details_roast_date_label),
-                                value = details.roastDate.toString()
-                            )
-
-                        }
-                    }
-
+            CoffeeXpCard {
+                Row(verticalAlignment = Alignment.Top) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Article,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.width(CoffeeXpTheme.spacing.base))
                     Text(
-                        text = stringResource(Res.string.details_logged_on, details.lastModifiedAt),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        text = stringResource(Res.string.details_user_logged_info),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+                Column(
+                    modifier = Modifier.padding(top = CoffeeXpTheme.spacing.stackSm),
+                    verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackSm)
+                ) {
+
+                    InfoRow(
+                        label = stringResource(Res.string.details_origin_label),
+                        value = coffeeDetails.origin
+                    )
+
+                    InfoRow(
+                        label = stringResource(Res.string.details_process_label),
+                        value = coffeeDetails.process ?: "-"
+                    )
+
+                    InfoRow(
+                        label = stringResource(Res.string.details_elevation_label),
+                        value = coffeeDetails.elevation ?: "-"
+                    )
+
+                    InfoRow(
+                        label = stringResource(Res.string.details_roast_date_label),
+                        value = coffeeDetails.roastDate.toString()
+                    )
+
+                }
             }
+
+            Text(
+                text = stringResource(Res.string.details_logged_on, coffeeDetails.lastModifiedAt),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

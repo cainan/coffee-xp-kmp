@@ -6,6 +6,7 @@ suspend inline fun <T> safeDatabaseUpdate(update: suspend () -> T): Result<T, Da
     return try {
         Result.Success(update())
     } catch (_: SQLiteException) {
+        // TODO Check a better response
         Result.Failure(DataError.Local.DISK_FULL)
     }
 }

@@ -102,6 +102,29 @@ class NewCoffeeViewModelTest {
     }
 
     @Test
+    fun `failure loading coffee to edit shows an error and keeps form empty`() = runTest {
+        val repository = FakeCoffeeRepository().apply {
+            getCoffeeByIdResult = Result.Failure(DataError.Local.UNKNOWN)
+        }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+
+        viewModel.state.test {
+            assertNull(awaitItem().coffeeId)
+
+            viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(404L))
+
+            val failedState = awaitItem()
+            assertNull(failedState.coffeeId)
+            assertTrue(failedState.coffeeNameState.text.isEmpty())
+            val errorMessage = failedState.errorMessage as UiText.Resource
+            assertEquals(Res.string.error_unknown, errorMessage.id)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(listOf(404L), repository.requestedIds)
+    }
+
+    @Test
     fun `save starts disabled`() = runTest {
         val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository())
 

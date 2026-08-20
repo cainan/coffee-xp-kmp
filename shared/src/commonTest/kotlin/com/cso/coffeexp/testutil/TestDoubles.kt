@@ -16,6 +16,7 @@ class FakeCoffeeRepository(
     private val coffeesFlow = MutableStateFlow(coffees)
 
     var coffeeById: Coffee? = null
+    var getCoffeeByIdResult: Result<Coffee?, DataError.Local>? = null
     var upsertResult: Result<Long, DataError.Local> = Result.Success(1L)
     var upsertBarrier: CompletableDeferred<Unit>? = null
     var deleteResult: Int = 1
@@ -30,9 +31,9 @@ class FakeCoffeeRepository(
         coffeesFlow.value = coffees
     }
 
-    override suspend fun getCoffeeById(id: Long): Coffee? {
+    override suspend fun getCoffeeById(id: Long): Result<Coffee?, DataError.Local> {
         requestedIds += id
-        return coffeeById
+        return getCoffeeByIdResult ?: Result.Success(coffeeById)
     }
 
     override fun getCoffees(): Flow<List<Coffee>> {

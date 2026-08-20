@@ -2,6 +2,8 @@ package com.cso.coffeexp.presentation.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cso.coffeexp.core.error_handling.onFailure
+import com.cso.coffeexp.core.error_handling.onSuccess
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.repository.CoffeeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,15 +47,44 @@ class DetailsViewModel(
     }
 
     private fun loadCoffeeDetails(selectedCoffeeId: Long) {
+
+        _state.update {
+            it.copy(
+                isLoading = true
+            )
+        }
+
         viewModelScope.launch {
-            val details = coffeeRepository.getCoffeeById(selectedCoffeeId)
-            details?.let {
-                _state.update {
-                    it.copy(
-                        coffee = details
-                    )
+
+            coffeeRepository.getCoffeeById(selectedCoffeeId)
+                .onSuccess { details ->
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    details?.let { coffee ->
+                        _state.update {
+                            it.copy(
+                                coffee = coffee
+                            )
+                        }
+                    }
                 }
-            }
+                .onFailure {
+
+                    // TODO must show an error
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+                }
+
+
         }
     }
 }

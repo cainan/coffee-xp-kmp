@@ -37,7 +37,7 @@ abstract class OfflineFirstCoffeeRepositoryContractTest {
 
         val id = upsertSuccessfully(coffee)
 
-        assertEquals(coffee.copy(id = id), repository.getCoffeeById(id))
+        assertEquals(coffee.copy(id = id), getByIdSuccessfully(id))
     }
 
     @Test
@@ -61,7 +61,7 @@ abstract class OfflineFirstCoffeeRepositoryContractTest {
 
     @Test
     fun `get by id returns null when coffee does not exist`() = runTest {
-        assertNull(repository.getCoffeeById(404L))
+        assertNull(getByIdSuccessfully(404L))
     }
 
     @Test
@@ -70,7 +70,7 @@ abstract class OfflineFirstCoffeeRepositoryContractTest {
 
         upsertSuccessfully(coffeeFixture(id = id, name = "Updated"))
 
-        assertEquals("Updated", repository.getCoffeeById(id)?.name)
+        assertEquals("Updated", getByIdSuccessfully(id)?.name)
         assertEquals(1, database.getCoffeeDao().observeAll().testItemCount())
     }
 
@@ -79,7 +79,7 @@ abstract class OfflineFirstCoffeeRepositoryContractTest {
         val id = upsertSuccessfully(coffeeFixture(id = null))
 
         assertEquals(1, repository.deleteCoffee(id))
-        assertNull(repository.getCoffeeById(id))
+        assertNull(getByIdSuccessfully(id))
         assertEquals(0, repository.deleteCoffee(id))
     }
 
@@ -95,5 +95,10 @@ abstract class OfflineFirstCoffeeRepositoryContractTest {
     private suspend fun upsertSuccessfully(coffee: Coffee): Long {
         val result = repository.upsertCoffee(coffee)
         return assertIs<Result.Success<Long>>(result).data
+    }
+
+    private suspend fun getByIdSuccessfully(id: Long): Coffee? {
+        val result = repository.getCoffeeById(id)
+        return assertIs<Result.Success<Coffee?>>(result).data
     }
 }

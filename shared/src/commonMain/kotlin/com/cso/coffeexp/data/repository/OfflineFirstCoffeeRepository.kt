@@ -15,8 +15,8 @@ class OfflineFirstCoffeeRepository(
     private val db: CoffeeXpDatabase
 ) : CoffeeRepository {
 
-    override suspend fun getCoffeeById(id: Long): Coffee? =
-        db.getCoffeeDao().getById(id)?.toCoffee()
+    override suspend fun getCoffeeById(id: Long): Result<Coffee?, DataError.Local> =
+        safeDatabaseUpdate { db.getCoffeeDao().getById(id)?.toCoffee() }
 
     override fun getCoffees(): Flow<List<Coffee>> =
         db.getCoffeeDao().observeAll().map { coffeeEntityList ->

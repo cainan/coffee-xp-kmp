@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cso.coffeexp.core.error_handling.onFailure
 import com.cso.coffeexp.core.error_handling.onSuccess
-import com.cso.coffeexp.core.utils.toUiText
 import com.cso.coffeexp.core.utils.LocalDate
+import com.cso.coffeexp.core.utils.toUiText
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.domain.repository.CoffeeRepository
@@ -96,36 +96,52 @@ class NewCoffeeViewModel(
     }
 
     private fun onCoffeeToEditSelected(coffeeId: Long) {
+
+        // TODO loading data ui will be necessary
+
         viewModelScope.launch {
-            coffeeRepository.getCoffeeById(coffeeId)?.let { coffeeToEdit ->
-                val current = _state.value
 
-                current.coffeeNameState.replaceText(coffeeToEdit.name)
-                current.roasterState.replaceText(coffeeToEdit.roaster)
-                current.seriesCollectionState.replaceText(coffeeToEdit.series.orEmpty())
-                current.originState.replaceText(coffeeToEdit.origin)
-                current.processState.replaceText(coffeeToEdit.process.orEmpty())
-                current.elevationState.replaceText(coffeeToEdit.elevation.orEmpty())
-                current.roastLevelState.replaceText(coffeeToEdit.roastLevel)
-                current.brewingMethod.replaceText(coffeeToEdit.brewingMethod)
-                current.grindSizeState.replaceText(coffeeToEdit.grindSize.orEmpty())
-                current.temperatureState.replaceText(coffeeToEdit.temperature.orEmpty())
-                current.ratioState.replaceText(coffeeToEdit.ratio.orEmpty())
-                current.brewDuration.replaceText(coffeeToEdit.brewTime.orEmpty())
-                current.tastingNotesState.replaceText(coffeeToEdit.notes.orEmpty())
+            coffeeRepository.getCoffeeById(coffeeId)
+                .onSuccess { coffeeToEdit ->
 
-                _state.update {
-                    it.copy(
-                        coffeeId = coffeeToEdit.id,
-                        photoUri = coffeeToEdit.imageUrl,
-                        roastDate = coffeeToEdit.roastDate,
-                        overallRating = coffeeToEdit.rating,
-                        createdAt = coffeeToEdit.createdAt,
-                        lastModifiedAt = coffeeToEdit.lastModifiedAt
-                    )
+                    if (coffeeToEdit == null) {
+                        // TODO no coffee found must inform user
+                    } else {
+                        val current = _state.value
+
+                        current.coffeeNameState.replaceText(coffeeToEdit.name)
+                        current.roasterState.replaceText(coffeeToEdit.roaster)
+                        current.seriesCollectionState.replaceText(coffeeToEdit.series.orEmpty())
+                        current.originState.replaceText(coffeeToEdit.origin)
+                        current.processState.replaceText(coffeeToEdit.process.orEmpty())
+                        current.elevationState.replaceText(coffeeToEdit.elevation.orEmpty())
+                        current.roastLevelState.replaceText(coffeeToEdit.roastLevel)
+                        current.brewingMethod.replaceText(coffeeToEdit.brewingMethod)
+                        current.grindSizeState.replaceText(coffeeToEdit.grindSize.orEmpty())
+                        current.temperatureState.replaceText(coffeeToEdit.temperature.orEmpty())
+                        current.ratioState.replaceText(coffeeToEdit.ratio.orEmpty())
+                        current.brewDuration.replaceText(coffeeToEdit.brewTime.orEmpty())
+                        current.tastingNotesState.replaceText(coffeeToEdit.notes.orEmpty())
+
+                        _state.update {
+                            it.copy(
+                                coffeeId = coffeeToEdit.id,
+                                photoUri = coffeeToEdit.imageUrl,
+                                roastDate = coffeeToEdit.roastDate,
+                                overallRating = coffeeToEdit.rating,
+                                createdAt = coffeeToEdit.createdAt,
+                                lastModifiedAt = coffeeToEdit.lastModifiedAt
+                            )
+                        }
+                    }
+                }.onFailure { error ->
+                    _state.update {
+                        it.copy(
+                            errorMessage = error.toUiText(),
+                        )
+                    }
                 }
 
-            }
         }
     }
 

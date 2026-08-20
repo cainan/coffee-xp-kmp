@@ -1,6 +1,8 @@
 package com.cso.coffeexp.presentation.details
 
 import app.cash.turbine.test
+import com.cso.coffeexp.core.error_handling.DataError
+import com.cso.coffeexp.core.error_handling.Result
 import com.cso.coffeexp.testutil.FakeCoffeeRepository
 import com.cso.coffeexp.testutil.FakeCoffeeXpLogger
 import com.cso.coffeexp.testutil.coffeeFixture
@@ -58,6 +60,23 @@ class DetailsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
         assertEquals(listOf(404L), repository.requestedIds)
+    }
+
+    @Test
+    fun `repository failure keeps details empty`() = runTest {
+        val repository = FakeCoffeeRepository().apply {
+            getCoffeeByIdResult = Result.Failure(DataError.Local.UNKNOWN)
+        }
+        val viewModel = DetailsViewModel(repository, FakeCoffeeXpLogger())
+
+        viewModel.state.test {
+            assertNull(awaitItem().coffee)
+            viewModel.onAction(DetailsAction.OnCoffeeIdSelected(12L))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(listOf(12L), repository.requestedIds)
     }
 
     @Test
