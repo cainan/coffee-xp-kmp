@@ -65,13 +65,19 @@ import coffeexp.shared.generated.resources.details_roast_level_label
 import coffeexp.shared.generated.resources.details_temp_label
 import coffeexp.shared.generated.resources.details_total_time_label
 import coffeexp.shared.generated.resources.details_user_logged_info
+import coffeexp.shared.generated.resources.message_try_again
 import com.cso.coffeexp.core.design_system.components.CoffeeHeroHeader
 import com.cso.coffeexp.core.design_system.components.CoffeeXpCard
+import com.cso.coffeexp.core.design_system.components.CoffeeXpMessageBanner
+import com.cso.coffeexp.core.design_system.components.CoffeeXpPrimaryButton
 import com.cso.coffeexp.core.design_system.components.CoffeeXpTopBar
 import com.cso.coffeexp.core.design_system.components.InfoRow
 import com.cso.coffeexp.core.design_system.components.StarRating
 import com.cso.coffeexp.core.design_system.components.StatItem
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
+import com.cso.coffeexp.core.design_system.utils.UiText
+import com.cso.coffeexp.core.design_system.utils.orDash
+import com.cso.coffeexp.core.utils.toFormattedDateString
 import com.cso.coffeexp.domain.mock.mockCoffee
 import com.cso.coffeexp.domain.model.Coffee
 import org.jetbrains.compose.resources.stringResource
@@ -148,7 +154,31 @@ fun DetailsScreen(
             ) {
                 CircularProgressIndicator()
             }
+        } else if (state.errorMessage != null) {
+
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(CoffeeXpTheme.spacing.marginMobile),
+                verticalArrangement = Arrangement.spacedBy(
+                    CoffeeXpTheme.spacing.stackMd,
+                    Alignment.CenterVertically
+                ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CoffeeXpMessageBanner(message = state.errorMessage.asString())
+                CoffeeXpPrimaryButton(
+                    text = stringResource(Res.string.message_try_again),
+                    onClick = {
+                        onAction(DetailsAction.OnRetryClick)
+                    },
+                    iconContentDescription = stringResource(Res.string.message_try_again),
+                )
+            }
         } else {
+
             state.coffee?.let { details ->
                 CoffeeDetailSection(innerPadding, details)
             }
@@ -195,43 +225,43 @@ private fun CoffeeDetailSection(
                     first = Triple(
                         Icons.Filled.Coffee,
                         stringResource(Res.string.details_method_label),
-                        coffeeDetails.brewingMethod
+                        coffeeDetails.brewingMethod.orDash()
                     ),
                     second = Triple(
                         Icons.Filled.WaterDrop,
                         stringResource(Res.string.details_ratio_label),
-                        coffeeDetails.ratio ?: "-"
+                        coffeeDetails.ratio.orDash()
                     )
                 )
                 BrewProfileRow(
                     first = Triple(
                         Icons.Filled.Timer,
                         stringResource(Res.string.details_total_time_label),
-                        coffeeDetails.brewTime ?: "-"
+                        coffeeDetails.brewTime.orDash()
                     ),
                     second = Triple(
                         Icons.Filled.Thermostat,
                         stringResource(Res.string.details_temp_label),
-                        coffeeDetails.temperature.toString()
+                        coffeeDetails.temperature.orDash()
                     )
                 )
                 BrewProfileRow(
                     first = Triple(
                         Icons.Filled.Tune,
                         stringResource(Res.string.details_grind_size_label),
-                        coffeeDetails.grindSize ?: "-"
+                        coffeeDetails.grindSize.orDash()
                     ),
                     second = Triple(
                         Icons.Filled.LocalFireDepartment,
                         stringResource(Res.string.details_roast_level_label),
-                        coffeeDetails.roastLevel
+                        coffeeDetails.roastLevel.orDash()
                     )
                 )
             }
 
             FinalAssessmentCard(
-                rating = coffeeDetails.rating,
-                notes = coffeeDetails.notes ?: ""
+                rating = (coffeeDetails.rating / 2),
+                notes = coffeeDetails.notes
             )
 
             CoffeeXpCard {
@@ -261,24 +291,27 @@ private fun CoffeeDetailSection(
 
                     InfoRow(
                         label = stringResource(Res.string.details_process_label),
-                        value = coffeeDetails.process ?: "-"
+                        value = coffeeDetails.process.orDash()
                     )
 
                     InfoRow(
                         label = stringResource(Res.string.details_elevation_label),
-                        value = coffeeDetails.elevation ?: "-"
+                        value = coffeeDetails.elevation.orDash()
                     )
 
                     InfoRow(
                         label = stringResource(Res.string.details_roast_date_label),
-                        value = coffeeDetails.roastDate.toString()
+                        value = coffeeDetails.roastDate.toFormattedDateString()
                     )
 
                 }
             }
 
             Text(
-                text = stringResource(Res.string.details_logged_on, coffeeDetails.lastModifiedAt),
+                text = stringResource(
+                    Res.string.details_logged_on,
+                    coffeeDetails.lastModifiedAt.toFormattedDateString()
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -316,7 +349,7 @@ private fun BrewProfileRow(
 @Composable
 private fun FinalAssessmentCard(
     rating: Double,
-    notes: String,
+    notes: String?,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -348,26 +381,29 @@ private fun FinalAssessmentCard(
                 emptyTint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
                 valueColor = MaterialTheme.colorScheme.onPrimary
             )
-            Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.stackSm))
-            Text(
-                text = stringResource(Res.string.details_journal_entry),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f)
-            )
-            Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base))
-            Row {
-                Box(
-                    modifier = Modifier
-                        .width(3.dp)
-                        .fillMaxHeight()
-                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f))
-                )
-                Spacer(modifier = Modifier.width(CoffeeXpTheme.spacing.base))
+
+            if (!notes.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.stackSm))
                 Text(
-                    text = notes,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    text = stringResource(Res.string.details_journal_entry),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f)
                 )
+                Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base))
+                Row {
+                    Box(
+                        modifier = Modifier
+                            .width(3.dp)
+                            .fillMaxHeight()
+                            .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f))
+                    )
+                    Spacer(modifier = Modifier.width(CoffeeXpTheme.spacing.base))
+                    Text(
+                        text = notes.orDash(),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
         }
     }
@@ -375,11 +411,25 @@ private fun FinalAssessmentCard(
 
 @Preview
 @Composable
-private fun Preview() {
+private fun DetailsScreenPreview() {
     CoffeeXpTheme {
         DetailsScreen(
             state = DetailsState(
                 coffee = mockCoffee
+            ),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DetailsScreenWithErrorPreview() {
+    CoffeeXpTheme {
+        DetailsScreen(
+            state = DetailsState(
+                coffee = mockCoffee,
+                errorMessage = UiText.Resource(Res.string.message_try_again)
             ),
             onAction = {}
         )

@@ -24,6 +24,10 @@
     <string name="error_server">The service is temporarily unavailable. Please try again.</string>
     <string name="error_unknown">We couldn't save your journal entry. Your information is still here, so please try again.</string>
 
+    <string name="message_try_again">Try again</string>
+    <string name="message_load_empty">Coffee not found, please, try again...</string>
+    <string name="message_load_error">Error trying to load a coffee, please, try again...</string>
+
     <string name="new_coffee_visual_identity">Visual Identity</string>
     <string name="new_coffee_capture_moment_title">Capture the Moment</string>
     <string name="new_coffee_capture_moment_subtitle">Tap to upload a photo of your bag or brew</string>

@@ -1,6 +1,10 @@
 package com.cso.coffeexp.presentation.details
 
 import app.cash.turbine.test
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.message_load_empty
+import coffeexp.shared.generated.resources.message_load_error
+import com.cso.coffeexp.core.design_system.utils.UiText
 import com.cso.coffeexp.core.error_handling.DataError
 import com.cso.coffeexp.core.error_handling.Result
 import com.cso.coffeexp.testutil.FakeCoffeeRepository
@@ -16,6 +20,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -40,39 +45,50 @@ class DetailsViewModelTest {
         val viewModel = DetailsViewModel(repository, FakeCoffeeXpLogger())
 
         viewModel.state.test {
-            assertNull(awaitItem().coffee)
+            assertEquals(DetailsState(isLoading = false, coffee = null), awaitItem())
             viewModel.onAction(DetailsAction.OnCoffeeIdSelected(12L))
-            assertEquals(coffee, awaitItem().coffee)
+            assertEquals(DetailsState(isLoading = true, coffee = null), awaitItem())
+            assertEquals(DetailsState(isLoading = false, coffee = coffee), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
         assertEquals(listOf(12L), repository.requestedIds)
     }
 
     @Test
-    fun `selecting a missing coffee keeps empty state`() = runTest {
+    fun `selecting a missing coffee sets error state`() = runTest {
         val repository = FakeCoffeeRepository()
         val viewModel = DetailsViewModel(repository, FakeCoffeeXpLogger())
 
         viewModel.state.test {
-            assertNull(awaitItem().coffee)
+            assertEquals(DetailsState(isLoading = false, coffee = null), awaitItem())
             viewModel.onAction(DetailsAction.OnCoffeeIdSelected(404L))
-            expectNoEvents()
+            assertEquals(DetailsState(isLoading = true, coffee = null), awaitItem())
+            val failedState = awaitItem()
+            assertFalse(failedState.isLoading)
+            assertNull(failedState.coffee)
+            val errorMessage = failedState.errorMessage as UiText.Resource
+            assertEquals(Res.string.message_load_empty, errorMessage.id)
             cancelAndIgnoreRemainingEvents()
         }
         assertEquals(listOf(404L), repository.requestedIds)
     }
 
     @Test
-    fun `repository failure keeps details empty`() = runTest {
+    fun `repository failure sets error state`() = runTest {
         val repository = FakeCoffeeRepository().apply {
             getCoffeeByIdResult = Result.Failure(DataError.Local.UNKNOWN)
         }
         val viewModel = DetailsViewModel(repository, FakeCoffeeXpLogger())
 
         viewModel.state.test {
-            assertNull(awaitItem().coffee)
+            assertEquals(DetailsState(isLoading = false, coffee = null), awaitItem())
             viewModel.onAction(DetailsAction.OnCoffeeIdSelected(12L))
-            expectNoEvents()
+            assertEquals(DetailsState(isLoading = true, coffee = null), awaitItem())
+            val failedState = awaitItem()
+            assertFalse(failedState.isLoading)
+            assertNull(failedState.coffee)
+            val errorMessage = failedState.errorMessage as UiText.Resource
+            assertEquals(Res.string.message_load_error, errorMessage.id)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -92,3 +108,5 @@ class DetailsViewModelTest {
         assertTrue(repository.deletedIds.isEmpty())
     }
 }
+
+

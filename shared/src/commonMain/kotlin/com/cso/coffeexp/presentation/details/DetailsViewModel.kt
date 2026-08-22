@@ -2,6 +2,10 @@ package com.cso.coffeexp.presentation.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.message_load_empty
+import coffeexp.shared.generated.resources.message_load_error
+import com.cso.coffeexp.core.design_system.utils.UiText
 import com.cso.coffeexp.core.error_handling.onFailure
 import com.cso.coffeexp.core.error_handling.onSuccess
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
@@ -19,6 +23,8 @@ class DetailsViewModel(
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
+
+    private var selectedCoffeeId: Long? = null
 
     private val _state = MutableStateFlow(DetailsState())
     val state = _state
@@ -41,49 +47,60 @@ class DetailsViewModel(
                 loadCoffeeDetails(action.coffeeId)
             }
 
+            is DetailsAction.OnRetryClick -> {
+                retryLoad()
+            }
+
             DetailsAction.OnBackClick -> Unit // handled by View
             is DetailsAction.OnEditClick -> Unit // Handled by View
         }
     }
 
-    private fun loadCoffeeDetails(selectedCoffeeId: Long) {
+    private fun retryLoad() {
+        selectedCoffeeId?.let { loadCoffeeDetails(it) }
+    }
+
+    private fun loadCoffeeDetails(coffeeId: Long) {
+
+        selectedCoffeeId = coffeeId
 
         _state.update {
             it.copy(
-                isLoading = true
+                errorMessage = null,
+                isLoading = true,
             )
         }
 
         viewModelScope.launch {
 
-            coffeeRepository.getCoffeeById(selectedCoffeeId)
+            coffeeRepository.getCoffeeById(coffeeId)
                 .onSuccess { details ->
 
-                    _state.update {
-                        it.copy(
-                            isLoading = false
-                        )
-                    }
-
-                    details?.let { coffee ->
+                    if (details == null) {
                         _state.update {
                             it.copy(
-                                coffee = coffee
+                                isLoading = false,
+                                errorMessage = UiText.Resource(Res.string.message_load_empty)
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                coffee = details
                             )
                         }
                     }
                 }
                 .onFailure {
 
-                    // TODO must show an error
-
                     _state.update {
                         it.copy(
-                            isLoading = false
+                            isLoading = false,
+                            errorMessage = UiText.Resource(Res.string.message_load_error)
                         )
                     }
                 }
-
 
         }
     }
