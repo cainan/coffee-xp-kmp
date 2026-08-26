@@ -10,6 +10,7 @@ import kotlinx.datetime.LocalDate
 data class NewCoffeeState(
     val coffeeId: Long? = null,
     val photoUri: String? = null,
+    val isPhotoPickerSheetOpen: Boolean = false,
     val coffeeNameState: TextFieldState = TextFieldState(),
     val roasterState: TextFieldState = TextFieldState(),
     val seriesCollectionState: TextFieldState = TextFieldState(),

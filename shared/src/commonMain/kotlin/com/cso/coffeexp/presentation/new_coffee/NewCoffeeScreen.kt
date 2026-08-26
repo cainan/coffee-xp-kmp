@@ -67,17 +67,20 @@ import coffeexp.shared.generated.resources.new_coffee_total_time_label
 import coffeexp.shared.generated.resources.new_coffee_visual_identity
 import com.cso.coffeexp.core.design_system.components.CoffeeXpCard
 import com.cso.coffeexp.core.design_system.components.CoffeeXpDatePickerField
-import com.cso.coffeexp.core.design_system.components.CoffeeXpMessageBanner
 import com.cso.coffeexp.core.design_system.components.CoffeeXpFilledField
+import com.cso.coffeexp.core.design_system.components.CoffeeXpMessageBanner
 import com.cso.coffeexp.core.design_system.components.CoffeeXpPrimaryButton
 import com.cso.coffeexp.core.design_system.components.CoffeeXpTopBar
 import com.cso.coffeexp.core.design_system.components.CoffeeXpUnderlinedField
+import com.cso.coffeexp.core.design_system.components.PhotoPickerBottomSheet
 import com.cso.coffeexp.core.design_system.components.PhotoUploadBox
 import com.cso.coffeexp.core.design_system.components.SectionHeader
 import com.cso.coffeexp.core.design_system.components.StarRating
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.core.design_system.utils.ObserveAsEvents
 import com.cso.coffeexp.core.utils.LocalDate
+import com.cso.coffeexp.core.utils.rememberCameraPickerLauncher
+import com.cso.coffeexp.core.utils.rememberGalleryPickerLauncher
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -121,6 +124,34 @@ fun NewCoffeeScreen(
     state: NewCoffeeState,
     onAction: (NewCoffeeAction) -> Unit,
 ) {
+    val galleryLauncher = rememberGalleryPickerLauncher(
+        onResult = { bytes ->
+            if (bytes != null) {
+                onAction(NewCoffeeAction.OnPhotoBytesSelected(bytes))
+            }
+        }
+    )
+
+    val cameraLauncher = rememberCameraPickerLauncher(
+        onResult = { bytes ->
+            if (bytes != null) {
+                onAction(NewCoffeeAction.OnPhotoBytesSelected(bytes))
+            }
+        }
+    )
+
+    if (state.isPhotoPickerSheetOpen) {
+        PhotoPickerBottomSheet(
+            onDismissRequest = { onAction(NewCoffeeAction.OnDismissPhotoPickerSheet) },
+            onTakePhotoClick = { cameraLauncher.launch() },
+            onChooseFromGalleryClick = { galleryLauncher.launch() },
+            isCameraSupported = com.cso.coffeexp.core.utils.isCameraSupported,
+            onRemovePhotoClick = if (state.photoUri != null) {
+                { onAction(NewCoffeeAction.OnRemovePhotoClick) }
+            } else null
+        )
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -150,6 +181,10 @@ fun NewCoffeeScreen(
                 title = stringResource(Res.string.new_coffee_capture_moment_title),
                 subtitle = stringResource(Res.string.new_coffee_capture_moment_subtitle),
                 onClick = { onAction(NewCoffeeAction.OnPhotoClick) },
+                photoUri = state.photoUri,
+                onRemovePhotoClick = if (state.photoUri != null) {
+                    { onAction(NewCoffeeAction.OnRemovePhotoClick) }
+                } else null,
                 photoIconContentDescription = stringResource(Res.string.cd_upload_photo)
             )
 

@@ -78,4 +78,9 @@
     <string name="details_elevation_label">Elevation</string>
     <string name="details_roast_date_label">Roast Date</string>
     <string name="details_logged_on">Logged on %1$s</string>
+
+    <string name="photo_picker_title">Coffee Photo</string>
+    <string name="photo_picker_take_photo">Take a Photo</string>
+    <string name="photo_picker_choose_gallery">Choose from Gallery</string>
+    <string name="photo_picker_remove_photo">Remove Photo</string>
 </resources>
