@@ -15,6 +15,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,10 +38,26 @@ class HomeViewModelTest {
         val viewModel = HomeViewModel(FakeCoffeeRepository(coffees), FakeCoffeeXpLogger())
 
         assertTrue(viewModel.state.value.isLoading)
+        assertNull(viewModel.state.value.coffeeList)
         viewModel.state.test {
             val loaded = awaitItem()
             assertFalse(loaded.isLoading)
             assertEquals(coffees, loaded.coffeeList)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `state stops loading when repository emits an empty list`() = runTest {
+        val viewModel = HomeViewModel(FakeCoffeeRepository(), FakeCoffeeXpLogger())
+
+        assertTrue(viewModel.state.value.isLoading)
+        assertNull(viewModel.state.value.coffeeList)
+
+        viewModel.state.test {
+            val loaded = awaitItem()
+            assertFalse(loaded.isLoading)
+            assertEquals(emptyList(), loaded.coffeeList)
             cancelAndIgnoreRemainingEvents()
         }
     }

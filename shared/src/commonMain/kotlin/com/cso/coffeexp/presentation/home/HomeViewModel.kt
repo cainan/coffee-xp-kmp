@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.core.component.getScopeName
 
 class HomeViewModel(
     private val coffeeRepository: CoffeeRepository,
@@ -40,7 +41,7 @@ class HomeViewModel(
     )
 
     fun onAction(action: HomeAction) {
-        logger.debug("${this.toString()} - action received: $action")
+        logger.debug("${this.getScopeName()} - action received: $action")
         when (action) {
             is HomeAction.OnSearch -> {
                 searchQuery.value = action.query
