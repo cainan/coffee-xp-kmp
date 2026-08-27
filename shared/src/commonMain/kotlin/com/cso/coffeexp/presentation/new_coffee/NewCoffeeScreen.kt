@@ -79,8 +79,6 @@ import com.cso.coffeexp.core.design_system.components.StarRating
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.core.design_system.utils.ObserveAsEvents
 import com.cso.coffeexp.core.utils.LocalDate
-import com.cso.coffeexp.core.utils.rememberCameraPickerLauncher
-import com.cso.coffeexp.core.utils.rememberGalleryPickerLauncher
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -124,28 +122,17 @@ fun NewCoffeeScreen(
     state: NewCoffeeState,
     onAction: (NewCoffeeAction) -> Unit,
 ) {
-    val galleryLauncher = rememberGalleryPickerLauncher(
-        onResult = { bytes ->
-            if (bytes != null) {
-                onAction(NewCoffeeAction.OnPhotoBytesSelected(bytes))
-            }
-        }
-    )
-
-    val cameraLauncher = rememberCameraPickerLauncher(
-        onResult = { bytes ->
-            if (bytes != null) {
-                onAction(NewCoffeeAction.OnPhotoBytesSelected(bytes))
-            }
-        }
-    )
 
     if (state.isPhotoPickerSheetOpen) {
         PhotoPickerBottomSheet(
             onDismissRequest = { onAction(NewCoffeeAction.OnDismissPhotoPickerSheet) },
-            onTakePhotoClick = { cameraLauncher.launch() },
-            onChooseFromGalleryClick = { galleryLauncher.launch() },
-            isCameraSupported = com.cso.coffeexp.core.utils.isCameraSupported,
+            onTakePhotoClick = {
+                // TODO
+            },
+            onChooseFromGalleryClick = {
+                // TODO
+            },
+            isCameraSupported = true,
             onRemovePhotoClick = if (state.photoUri != null) {
                 { onAction(NewCoffeeAction.OnRemovePhotoClick) }
             } else null

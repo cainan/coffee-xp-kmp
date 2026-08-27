@@ -90,6 +90,21 @@ class NewCoffeeViewModel(
                 onCoffeeToEditSelected(action.coffeeId)
             }
 
+            NewCoffeeAction.OnDismissPhotoPickerSheet -> {
+                // TODO
+                logger.debug("OnDismissPhotoPickerSheet clicked")
+            }
+
+            is NewCoffeeAction.OnPhotoBytesSelected -> {
+                // TODO
+                logger.debug("OnPhotoBytesSelected clicked")
+            }
+
+            NewCoffeeAction.OnRemovePhotoClick -> {
+                // TODO
+                logger.debug("OnRemovePhotoClick clicked")
+            }
+
             NewCoffeeAction.OnBackClick -> Unit // handled by Root
 
         }
