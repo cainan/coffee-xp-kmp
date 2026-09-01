@@ -4,6 +4,10 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.message_load_empty
+import coffeexp.shared.generated.resources.message_load_error
+import com.cso.coffeexp.core.design_system.utils.UiText
 import com.cso.coffeexp.core.error_handling.onFailure
 import com.cso.coffeexp.core.error_handling.onSuccess
 import com.cso.coffeexp.core.utils.LocalDate
@@ -112,7 +116,12 @@ class NewCoffeeViewModel(
 
     private fun onCoffeeToEditSelected(coffeeId: Long) {
 
-        // TODO loading data ui will be necessary
+        _state.update {
+            it.copy(
+                isLoading = true,
+                loadIssue = null
+            )
+        }
 
         viewModelScope.launch {
 
@@ -120,7 +129,12 @@ class NewCoffeeViewModel(
                 .onSuccess { coffeeToEdit ->
 
                     if (coffeeToEdit == null) {
-                        // TODO no coffee found must inform user
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                loadIssue = UiText.Resource(Res.string.message_load_empty)
+                            )
+                        }
                     } else {
                         val current = _state.value
 
@@ -140,6 +154,7 @@ class NewCoffeeViewModel(
 
                         _state.update {
                             it.copy(
+                                isLoading = false,
                                 coffeeId = coffeeToEdit.id,
                                 photoUri = coffeeToEdit.imageUrl,
                                 roastDate = coffeeToEdit.roastDate,
@@ -149,10 +164,11 @@ class NewCoffeeViewModel(
                             )
                         }
                     }
-                }.onFailure { error ->
+                }.onFailure {
                     _state.update {
                         it.copy(
-                            errorMessage = error.toUiText(),
+                            isLoading = false,
+                            loadIssue = UiText.Resource(Res.string.message_load_error),
                         )
                     }
                 }

@@ -26,6 +26,8 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import coffeexp.shared.generated.resources.Res
 import coffeexp.shared.generated.resources.error_unknown
+import coffeexp.shared.generated.resources.message_load_empty
+import coffeexp.shared.generated.resources.message_load_error
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewCoffeeViewModelTest {
@@ -63,39 +65,53 @@ class NewCoffeeViewModelTest {
         viewModel.state.test {
             awaitItem()
             viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(21L))
-            val state = awaitItem()
+            val loadingState = awaitItem()
+            assertTrue(loadingState.isLoading)
+            assertNull(loadingState.loadIssue)
 
-            assertEquals(coffee.id, state.coffeeId)
-            assertEquals(coffee.imageUrl, state.photoUri)
-            assertEquals(coffee.name, state.coffeeNameState.text.toString())
-            assertEquals(coffee.roaster, state.roasterState.text.toString())
-            assertEquals(coffee.series, state.seriesCollectionState.text.toString())
-            assertEquals(coffee.origin, state.originState.text.toString())
-            assertEquals(coffee.process, state.processState.text.toString())
-            assertEquals(coffee.elevation, state.elevationState.text.toString())
-            assertEquals(coffee.roastDate, state.roastDate)
-            assertEquals(coffee.roastLevel, state.roastLevelState.text.toString())
-            assertEquals(coffee.brewingMethod, state.brewingMethod.text.toString())
-            assertEquals(coffee.grindSize, state.grindSizeState.text.toString())
-            assertEquals(coffee.temperature, state.temperatureState.text.toString())
-            assertEquals(coffee.ratio, state.ratioState.text.toString())
-            assertEquals(coffee.brewTime, state.brewDuration.text.toString())
-            assertEquals(coffee.rating, state.overallRating)
-            assertEquals(coffee.notes, state.tastingNotesState.text.toString())
+            val loadedState = awaitItem()
+
+            assertFalse(loadedState.isLoading)
+            assertNull(loadedState.loadIssue)
+            assertEquals(coffee.id, loadedState.coffeeId)
+            assertEquals(coffee.imageUrl, loadedState.photoUri)
+            assertEquals(coffee.name, loadedState.coffeeNameState.text.toString())
+            assertEquals(coffee.roaster, loadedState.roasterState.text.toString())
+            assertEquals(coffee.series, loadedState.seriesCollectionState.text.toString())
+            assertEquals(coffee.origin, loadedState.originState.text.toString())
+            assertEquals(coffee.process, loadedState.processState.text.toString())
+            assertEquals(coffee.elevation, loadedState.elevationState.text.toString())
+            assertEquals(coffee.roastDate, loadedState.roastDate)
+            assertEquals(coffee.roastLevel, loadedState.roastLevelState.text.toString())
+            assertEquals(coffee.brewingMethod, loadedState.brewingMethod.text.toString())
+            assertEquals(coffee.grindSize, loadedState.grindSizeState.text.toString())
+            assertEquals(coffee.temperature, loadedState.temperatureState.text.toString())
+            assertEquals(coffee.ratio, loadedState.ratioState.text.toString())
+            assertEquals(coffee.brewTime, loadedState.brewDuration.text.toString())
+            assertEquals(coffee.rating, loadedState.overallRating)
+            assertEquals(coffee.notes, loadedState.tastingNotesState.text.toString())
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `selecting missing coffee keeps empty state`() = runTest {
+    fun `selecting missing coffee shows empty load issue and keeps form empty`() = runTest {
         val repository = FakeCoffeeRepository()
         val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
 
         viewModel.state.test {
-            val initial = awaitItem()
+            awaitItem()
             viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(404L))
-            expectNoEvents()
-            assertNull(initial.coffeeId)
+            assertTrue(awaitItem().isLoading)
+
+            val missingState = awaitItem()
+            assertFalse(missingState.isLoading)
+            assertNull(missingState.coffeeId)
+            assertTrue(missingState.coffeeNameState.text.isEmpty())
+            assertEquals(
+                Res.string.message_load_empty,
+                (missingState.loadIssue as UiText.Resource).id
+            )
             cancelAndIgnoreRemainingEvents()
         }
         assertEquals(listOf(404L), repository.requestedIds)
@@ -109,15 +125,19 @@ class NewCoffeeViewModelTest {
         val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
 
         viewModel.state.test {
-            assertNull(awaitItem().coffeeId)
+            awaitItem()
 
             viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(404L))
+            assertTrue(awaitItem().isLoading)
 
             val failedState = awaitItem()
+            assertFalse(failedState.isLoading)
             assertNull(failedState.coffeeId)
             assertTrue(failedState.coffeeNameState.text.isEmpty())
-            val errorMessage = failedState.errorMessage as UiText.Resource
-            assertEquals(Res.string.error_unknown, errorMessage.id)
+            assertEquals(
+                Res.string.message_load_error,
+                (failedState.loadIssue as UiText.Resource).id
+            )
             cancelAndIgnoreRemainingEvents()
         }
 

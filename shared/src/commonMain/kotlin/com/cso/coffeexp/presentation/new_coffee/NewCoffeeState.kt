@@ -8,6 +8,10 @@ import kotlinx.datetime.LocalDate
 
 @Stable
 data class NewCoffeeState(
+
+    val isLoading: Boolean = false,
+    val loadIssue: UiText? = null,
+
     val coffeeId: Long? = null,
     val photoUri: String? = null,
     val isPhotoPickerSheetOpen: Boolean = false,
