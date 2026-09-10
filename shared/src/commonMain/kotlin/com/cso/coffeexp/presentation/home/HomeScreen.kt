@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -140,7 +141,8 @@ fun HomeScreen(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = CoffeeXpTheme.spacing.gutter),
-                    verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.gutter)
+                    verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.gutter),
+                    state = LazyListState()
                 ) {
                     items(items = state.coffeeList, key = { it.id ?: 0 }) { coffee ->
                         SwipeToDeleteCoffeeBox(
