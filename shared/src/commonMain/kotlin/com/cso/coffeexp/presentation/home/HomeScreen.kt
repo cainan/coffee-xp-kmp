@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
@@ -22,7 +22,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -91,6 +95,17 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
+        val listState = rememberLazyListState()
+        var previousCoffeeCount by remember { mutableStateOf(state.coffeeList?.size ?: 0) }
+
+        LaunchedEffect(state.coffeeList?.size) {
+            val currentCount = state.coffeeList?.size ?: 0
+            if (currentCount > previousCoffeeCount) {
+                listState.animateScrollToItem(0)
+            }
+            previousCoffeeCount = currentCount
+        }
+
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -142,7 +157,7 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = CoffeeXpTheme.spacing.gutter),
                     verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.gutter),
-                    state = LazyListState()
+                    state = listState
                 ) {
                     items(items = state.coffeeList, key = { it.id ?: 0 }) { coffee ->
                         SwipeToDeleteCoffeeBox(
