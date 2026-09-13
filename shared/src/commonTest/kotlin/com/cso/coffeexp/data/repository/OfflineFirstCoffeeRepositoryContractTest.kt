@@ -1,6 +1,9 @@
 package com.cso.coffeexp.data.repository
 
+import androidx.room.execSQL
+import androidx.room.useWriterConnection
 import app.cash.turbine.test
+import com.cso.coffeexp.core.error_handling.DataError
 import com.cso.coffeexp.core.error_handling.Result
 import com.cso.coffeexp.database.CoffeeXpDatabase
 import com.cso.coffeexp.domain.model.Coffee
@@ -88,6 +91,16 @@ abstract class OfflineFirstCoffeeRepositoryContractTest {
         assertIs<Result.Success<Unit>>(repository.deleteCoffee(id))
         assertNull(getByIdSuccessfully(id))
         assertIs<Result.Success<Unit>>(repository.deleteCoffee(id))
+    }
+
+    @Test
+    fun `sqlite errors other than disk full are reported as unknown`() = runTest {
+        // A real SQLiteException ("no such table", SQLITE_ERROR) from the platform driver.
+        database.useWriterConnection { it.execSQL("DROP TABLE coffee") }
+
+        val result = repository.upsertCoffee(coffeeFixture(id = null))
+
+        assertEquals(DataError.Local.UNKNOWN, assertIs<Result.Failure<DataError.Local>>(result).error)
     }
 
     private suspend fun <T> Flow<List<T>>.testItemCount(): Int {
