@@ -20,22 +20,23 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.cso.coffeexp.core.design_system.components.CoffeeXpSearchBar
-import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
-import com.cso.coffeexp.domain.logger.CoffeeXpLogger
-import com.cso.coffeexp.presentation.components.SwipeToDeleteCoffeeBox
-import org.jetbrains.compose.resources.stringResource
 import coffeexp.shared.generated.resources.Res
 import coffeexp.shared.generated.resources.app_name
 import coffeexp.shared.generated.resources.cd_add_new_coffee
@@ -44,6 +45,16 @@ import coffeexp.shared.generated.resources.cd_search
 import coffeexp.shared.generated.resources.home_empty_state
 import coffeexp.shared.generated.resources.home_my_brews
 import coffeexp.shared.generated.resources.home_search_placeholder
+import coffeexp.shared.generated.resources.home_undo
+import com.cso.coffeexp.core.design_system.components.CoffeeXpSearchBar
+import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
+import com.cso.coffeexp.core.design_system.utils.ObserveAsEvents
+import com.cso.coffeexp.domain.logger.CoffeeXpLogger
+import com.cso.coffeexp.presentation.components.SwipeToDeleteCoffeeBox
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -57,8 +68,49 @@ fun HomeRoot(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarScope = rememberCoroutineScope()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is HomeEvent.ShowUndoDelete -> {
+                val message = event.message.asStringAsync()
+                val actionLabel = getString(Res.string.home_undo)
+                // Dismissing the previous undo snackbar makes it report its own dismissal.
+                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarScope.launch {
+                    val result = try {
+                        snackbarHostState.showSnackbar(
+                            message = message,
+                            actionLabel = actionLabel,
+                            duration = SnackbarDuration.Short,
+                        )
+                    } catch (e: CancellationException) {
+                        // Leaving the screen confirms the deletion.
+                        viewModel.onAction(HomeAction.OnUndoDeleteDismissed(event.coffeeId))
+                        throw e
+                    }
+                    viewModel.onAction(
+                        when (result) {
+                            SnackbarResult.ActionPerformed -> HomeAction.OnUndoDeleteClick(event.coffeeId)
+                            SnackbarResult.Dismissed -> HomeAction.OnUndoDeleteDismissed(event.coffeeId)
+                        }
+                    )
+                }
+            }
+
+            is HomeEvent.DeleteFailed -> {
+                val message = event.message.asStringAsync()
+                snackbarScope.launch {
+                    snackbarHostState.showSnackbar(message = message)
+                }
+            }
+        }
+    }
+
     HomeScreen(
         state = state,
+        snackbarHostState = snackbarHostState,
         onAction = { action ->
             logger.debug("Action received: $action")
             when (action) {
@@ -75,6 +127,7 @@ fun HomeRoot(
 @Composable
 fun HomeScreen(
     state: HomeState,
+    snackbarHostState: SnackbarHostState,
     onAction: (HomeAction) -> Unit,
 ) {
     Scaffold(
@@ -83,6 +136,9 @@ fun HomeScreen(
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(Res.string.app_name)) }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -96,14 +152,18 @@ fun HomeScreen(
         }
     ) { innerPadding ->
         val listState = rememberLazyListState()
-        var previousCoffeeCount by remember { mutableStateOf(state.coffeeList?.size ?: 0) }
+        // Ids are auto-incremented, so only a newly created coffee exceeds the newest id seen.
+        // Restored items (undo / failed delete) or clearing the search don't scroll the list.
+        var newestSeenCoffeeId by rememberSaveable { mutableStateOf<Long?>(null) }
+        val newestCoffeeId = state.coffeeList?.mapNotNull { it.id }?.maxOrNull()
 
-        LaunchedEffect(state.coffeeList?.size) {
-            val currentCount = state.coffeeList?.size ?: 0
-            if (currentCount > previousCoffeeCount) {
-                listState.animateScrollToItem(0)
+        LaunchedEffect(newestCoffeeId) {
+            if (newestCoffeeId == null) return@LaunchedEffect
+            val previous = newestSeenCoffeeId
+            if (previous == null || newestCoffeeId > previous) {
+                if (previous != null) listState.animateScrollToItem(0)
+                newestSeenCoffeeId = newestCoffeeId
             }
-            previousCoffeeCount = currentCount
         }
 
         Column(
@@ -163,7 +223,7 @@ fun HomeScreen(
                         SwipeToDeleteCoffeeBox(
                             coffee = coffee,
                             onToggleDone = {},
-                            onRemove = { onAction(HomeAction.OnCoffeeRemoved(it)) },
+                            onRemove = { onAction(HomeAction.OnCoffeeSwipedToRemove(it)) },
                             onClick = { clicked ->
                                 clicked.id?.let { coffeeId ->
                                     onAction(HomeAction.OnDetailsClick(coffeeId))
@@ -184,7 +244,8 @@ private fun Preview() {
     CoffeeXpTheme {
         HomeScreen(
             state = HomeState(),
-            onAction = {}
+            snackbarHostState = SnackbarHostState(),
+            onAction = {},
         )
     }
 }

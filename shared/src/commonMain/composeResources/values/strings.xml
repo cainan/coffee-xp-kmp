@@ -5,6 +5,8 @@
     <string name="home_my_brews">My Brews</string>
     <string name="home_search_placeholder">Search your past logs…</string>
     <string name="home_empty_state">No coffees yet. Add one with the + button!</string>
+    <string name="home_coffee_deleted">%1$s deleted</string>
+    <string name="home_undo">Undo</string>
 
     <string name="cd_search">Search</string>
     <string name="cd_more_options">More options</string>
@@ -23,6 +25,7 @@
     <string name="error_unauthorized">You don't have permission to complete this action.</string>
     <string name="error_server">The service is temporarily unavailable. Please try again.</string>
     <string name="error_unknown">We couldn't save your journal entry. Your information is still here, so please try again.</string>
+    <string name="error_delete_failed">Could not delete this coffee. Please try again.</string>
 
     <string name="message_try_again">Try again</string>
     <string name="message_load_empty">Coffee not found, please, try again...</string>

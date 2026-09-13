@@ -6,6 +6,8 @@ sealed interface HomeAction {
     data object OnNewCoffeeClick : HomeAction
     data class OnDetailsClick(val coffeeId: Long) : HomeAction
 
-    data class OnCoffeeRemoved(val coffee: Coffee) : HomeAction
+    data class OnCoffeeSwipedToRemove(val coffee: Coffee) : HomeAction
+    data class OnUndoDeleteClick(val coffeeId: Long) : HomeAction
+    data class OnUndoDeleteDismissed(val coffeeId: Long) : HomeAction
     data class OnSearch(val query: String) : HomeAction
 }

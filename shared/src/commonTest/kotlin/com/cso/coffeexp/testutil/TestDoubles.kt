@@ -1,12 +1,14 @@
 package com.cso.coffeexp.testutil
 
 import com.cso.coffeexp.core.error_handling.DataError
+import com.cso.coffeexp.core.error_handling.EmptyResult
 import com.cso.coffeexp.core.error_handling.Result
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.domain.repository.CoffeeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.datetime.LocalDate
 
@@ -19,7 +21,7 @@ class FakeCoffeeRepository(
     var getCoffeeByIdResult: Result<Coffee?, DataError.Local>? = null
     var upsertResult: Result<Long, DataError.Local> = Result.Success(1L)
     var upsertBarrier: CompletableDeferred<Unit>? = null
-    var deleteResult: Int = 1
+    var deleteResult: EmptyResult<DataError.Local> = Result.Success(Unit)
 
     val requestedIds = mutableListOf<Long>()
     val upsertedCoffees = mutableListOf<Coffee>()
@@ -47,8 +49,11 @@ class FakeCoffeeRepository(
         return upsertResult
     }
 
-    override suspend fun deleteCoffee(id: Long): Int {
+    override suspend fun deleteCoffee(id: Long): EmptyResult<DataError.Local> {
         deletedIds += id
+        if (deleteResult is Result.Success) {
+            coffeesFlow.update { coffees -> coffees.filterNot { it.id == id } }
+        }
         return deleteResult
     }
 }

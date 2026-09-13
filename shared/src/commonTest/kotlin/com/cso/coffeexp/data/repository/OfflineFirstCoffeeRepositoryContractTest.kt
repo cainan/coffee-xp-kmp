@@ -5,6 +5,10 @@ import com.cso.coffeexp.core.error_handling.Result
 import com.cso.coffeexp.database.CoffeeXpDatabase
 import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.testutil.coffeeFixture
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
@@ -18,16 +22,19 @@ abstract class OfflineFirstCoffeeRepositoryContractTest {
     protected abstract fun createDatabase(): CoffeeXpDatabase
 
     private lateinit var database: CoffeeXpDatabase
+    private lateinit var applicationScope: CoroutineScope
     private lateinit var repository: OfflineFirstCoffeeRepository
 
     @BeforeTest
     fun setUp() {
         database = createDatabase()
-        repository = OfflineFirstCoffeeRepository(database)
+        applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        repository = OfflineFirstCoffeeRepository(database, applicationScope)
     }
 
     @AfterTest
     fun tearDown() {
+        applicationScope.cancel()
         database.close()
     }
 
@@ -75,12 +82,12 @@ abstract class OfflineFirstCoffeeRepositoryContractTest {
     }
 
     @Test
-    fun `delete returns affected row count and removes coffee`() = runTest {
+    fun `delete removes coffee and is idempotent`() = runTest {
         val id = upsertSuccessfully(coffeeFixture(id = null))
 
-        assertEquals(1, repository.deleteCoffee(id))
+        assertIs<Result.Success<Unit>>(repository.deleteCoffee(id))
         assertNull(getByIdSuccessfully(id))
-        assertEquals(0, repository.deleteCoffee(id))
+        assertIs<Result.Success<Unit>>(repository.deleteCoffee(id))
     }
 
     private suspend fun <T> Flow<List<T>>.testItemCount(): Int {
