@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxDefaults
@@ -59,16 +60,19 @@ fun SwipeToDeleteCoffeeBox(
                 SwipeToDismissBoxValue.StartToEnd -> {}
 
                 SwipeToDismissBoxValue.EndToStart -> {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = stringResource(Res.string.cd_remove_item),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Red)
-                            .wrapContentSize(Alignment.CenterEnd)
-                            .padding(CoffeeXpTheme.spacing.stackSm),
-                        tint = Color.White
-                    )
+                    Card {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(Res.string.cd_remove_item),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Red)
+                                .wrapContentSize(Alignment.CenterEnd)
+                                .padding(CoffeeXpTheme.spacing.stackSm),
+
+                            tint = Color.White
+                        )
+                    }
                 }
 
                 SwipeToDismissBoxValue.Settled -> {}

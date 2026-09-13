@@ -1,7 +1,6 @@
 package com.cso.coffeexp.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,14 +27,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.cd_coffee_rating
 import coil3.compose.AsyncImage
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.core.design_system.theme.PillShape
 import com.cso.coffeexp.domain.mock.mockCoffeeList
 import com.cso.coffeexp.domain.model.Coffee
 import org.jetbrains.compose.resources.stringResource
-import coffeexp.shared.generated.resources.Res
-import coffeexp.shared.generated.resources.cd_coffee_rating
 import kotlin.math.abs
 import kotlin.math.round
 
@@ -47,10 +46,12 @@ fun CoffeeCard(
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick(coffee) },
+            .fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        onClick = {
+            onClick(coffee)
+        }
     ) {
         Column {
             Box(
@@ -101,7 +102,10 @@ private fun RatingBadge(
         modifier = modifier
             .clip(PillShape)
             .background(Color.Black.copy(alpha = 0.55f))
-            .padding(horizontal = CoffeeXpTheme.spacing.base, vertical = CoffeeXpTheme.spacing.base / 2),
+            .padding(
+                horizontal = CoffeeXpTheme.spacing.base,
+                vertical = CoffeeXpTheme.spacing.base / 2
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
