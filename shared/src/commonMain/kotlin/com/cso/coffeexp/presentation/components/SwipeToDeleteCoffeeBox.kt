@@ -1,13 +1,13 @@
 package com.cso.coffeexp.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxDefaults
 import androidx.compose.material3.SwipeToDismissBoxState
@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import coffeexp.shared.generated.resources.Res
 import coffeexp.shared.generated.resources.cd_remove_item
@@ -60,17 +60,18 @@ fun SwipeToDeleteCoffeeBox(
                 SwipeToDismissBoxValue.StartToEnd -> {}
 
                 SwipeToDismissBoxValue.EndToStart -> {
-                    Card {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(MaterialTheme.shapes.large)
+                            .background(MaterialTheme.colorScheme.error),
+                        contentAlignment = Alignment.CenterEnd,
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(Res.string.cd_remove_item),
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Red)
-                                .wrapContentSize(Alignment.CenterEnd)
-                                .padding(CoffeeXpTheme.spacing.stackSm),
-
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onError,
+                            modifier = Modifier.padding(CoffeeXpTheme.spacing.stackSm),
                         )
                     }
                 }
