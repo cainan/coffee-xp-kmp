@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -85,6 +86,10 @@ import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.core.design_system.utils.ObserveAsEvents
 import com.cso.coffeexp.core.design_system.utils.UiText
 import com.cso.coffeexp.core.utils.LocalDate
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.readBytes
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -95,6 +100,22 @@ fun NewCoffeeRoot(
     onBackClick: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+
+    val galleryLauncher = rememberFilePickerLauncher(
+        type = FileKitType.Image,
+        onError = { error ->
+            viewModel.onAction(NewCoffeeAction.OnPhotoPickerError(error.message))
+        },
+        onResult = { file ->
+            // file == null quando o usuário cancela
+            if (file != null) {
+                scope.launch {
+                    viewModel.onAction(NewCoffeeAction.OnPhotoBytesSelected(file.readBytes()))
+                }
+            }
+        }
+    )
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -115,6 +136,7 @@ fun NewCoffeeRoot(
         onAction = { action ->
             when (action) {
                 is NewCoffeeAction.OnBackClick -> onBackClick()
+                is NewCoffeeAction.OnFromGalleryClick -> galleryLauncher.launch()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -136,7 +158,7 @@ fun NewCoffeeScreen(
                 // TODO
             },
             onChooseFromGalleryClick = {
-                // TODO
+                onAction(NewCoffeeAction.OnFromGalleryClick)
             },
             isCameraSupported = true,
             onRemovePhotoClick = if (state.photoUri != null) {
@@ -213,7 +235,7 @@ private fun NewCoffeeForm(
         PhotoUploadBox(
             title = stringResource(Res.string.new_coffee_capture_moment_title),
             subtitle = stringResource(Res.string.new_coffee_capture_moment_subtitle),
-            onClick = { onAction(NewCoffeeAction.OnPhotoClick) },
+            onClick = { onAction(NewCoffeeAction.OnOpenPhotoPickerSheet) },
             photoUri = state.photoUri,
             onRemovePhotoClick = if (state.photoUri != null) {
                 { onAction(NewCoffeeAction.OnRemovePhotoClick) }

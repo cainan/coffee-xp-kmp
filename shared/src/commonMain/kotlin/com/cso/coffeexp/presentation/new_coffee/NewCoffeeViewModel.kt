@@ -15,6 +15,7 @@ import com.cso.coffeexp.core.utils.toUiText
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.domain.repository.CoffeeRepository
+import com.cso.coffeexp.domain.repository.PhotoStorage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,9 +31,12 @@ import kotlinx.coroutines.launch
 class NewCoffeeViewModel(
     private val logger: CoffeeXpLogger,
     private val coffeeRepository: CoffeeRepository,
+    private val photoStorage: PhotoStorage,
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
+
+    private var originalPhotoUri: String? = null
 
     private val eventChannel = Channel<NewCoffeeEvent>()
     val events = eventChannel.receiveAsFlow()
@@ -77,40 +81,78 @@ class NewCoffeeViewModel(
 
             is NewCoffeeAction.OnRoastDateSelected -> _state.update { it.copy(roastDate = action.date) }
 
-            NewCoffeeAction.OnPhotoClick -> {
-                // TODO: wire to platform image picker once the data layer exists.
-            }
-
-            is NewCoffeeAction.OnPhotoSelected -> _state.update {
-                it.copy(photoUri = action.uri)
-            }
-
-            NewCoffeeAction.OnSaveClick -> {
-                // TODO validate coffee fields before save
-                saveCoffee()
-            }
-
             is NewCoffeeAction.OnCoffeeToEditSelected -> {
                 onCoffeeToEditSelected(action.coffeeId)
             }
 
+            NewCoffeeAction.OnOpenPhotoPickerSheet -> {
+                logger.debug("OnOpenPhotoPickerSheet clicked")
+                openPhotoPickerSheet(true)
+            }
+
             NewCoffeeAction.OnDismissPhotoPickerSheet -> {
-                // TODO
                 logger.debug("OnDismissPhotoPickerSheet clicked")
+                openPhotoPickerSheet(false)
+            }
+
+            NewCoffeeAction.OnFromGalleryClick -> Unit // Handled by Root
+
+            is NewCoffeeAction.OnPhotoPickerError -> {
+                logger.debug("Photo picker failed: ${action.message}")
             }
 
             is NewCoffeeAction.OnPhotoBytesSelected -> {
-                // TODO
-                logger.debug("OnPhotoBytesSelected clicked")
+                logger.debug("Photo picked: ${action.bytes.size} bytes")
+                saveSelectedPhoto(action.bytes)
+            }
+
+            NewCoffeeAction.OnSaveClick -> {
+                saveCoffee()
             }
 
             NewCoffeeAction.OnRemovePhotoClick -> {
-                // TODO
                 logger.debug("OnRemovePhotoClick clicked")
+                removePhoto()
             }
 
             NewCoffeeAction.OnBackClick -> Unit // handled by Root
 
+        }
+    }
+
+    private fun saveSelectedPhoto(bytes: ByteArray) {
+        viewModelScope.launch {
+            photoStorage.savePhoto(bytes)
+                .onSuccess { newPath ->
+                    val previousPath = _state.value.photoUri
+                    _state.update { it.copy(photoUri = newPath, errorMessage = null) }
+                    deleteIfSessionPhoto(previousPath)
+                }
+                .onFailure { error ->
+                    logger.debug("Fail to save photo: $error")
+                    _state.update { it.copy(errorMessage = error.toUiText()) }
+                }
+        }
+    }
+
+    private fun removePhoto() {
+        val currentPath = _state.value.photoUri
+        _state.update { it.copy(photoUri = null) }
+        viewModelScope.launch { deleteIfSessionPhoto(currentPath) }
+    }
+
+    // Delete photo only if not from 'edited coffee'
+    private suspend fun deleteIfSessionPhoto(path: String?) {
+        if (path != null && path != originalPhotoUri) {
+            photoStorage.deletePhoto(path)
+        }
+    }
+
+    private fun openPhotoPickerSheet(open: Boolean) {
+        _state.update {
+            it.copy(
+                isPhotoPickerSheetOpen = open,
+            )
         }
     }
 
@@ -137,6 +179,9 @@ class NewCoffeeViewModel(
                         }
                     } else {
                         val current = _state.value
+
+                        // keep original photo url of the coffee to edit, to prevent deletion if photo is edited but not saved
+                        originalPhotoUri = coffeeToEdit.imageUrl
 
                         current.coffeeNameState.replaceText(coffeeToEdit.name)
                         current.roasterState.replaceText(coffeeToEdit.roaster)
@@ -224,7 +269,15 @@ class NewCoffeeViewModel(
             ).onSuccess {
                 logger.debug("Successfully upserted a coffee")
                 _state.update { current -> current.copy(isSaving = false) }
+
+                // check if a photo was edited and must delete the previous one
+                val original = originalPhotoUri
+                if (original != null && original != _state.value.photoUri) {
+                    photoStorage.deletePhoto(original)
+                }
+
                 eventChannel.send(NewCoffeeEvent.AddedSuccessfully)
+
             }.onFailure { error ->
                 logger.debug("Fail to upsert a coffee")
                 _state.update { current ->

@@ -3,16 +3,21 @@ package com.cso.coffeexp.presentation.new_coffee
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.snapshots.Snapshot
 import app.cash.turbine.test
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.error_unknown
+import coffeexp.shared.generated.resources.message_load_empty
+import coffeexp.shared.generated.resources.message_load_error
+import com.cso.coffeexp.core.design_system.utils.UiText
 import com.cso.coffeexp.core.error_handling.DataError
 import com.cso.coffeexp.core.error_handling.Result
-import com.cso.coffeexp.core.design_system.utils.UiText
 import com.cso.coffeexp.core.utils.LocalDate
 import com.cso.coffeexp.testutil.FakeCoffeeRepository
 import com.cso.coffeexp.testutil.FakeCoffeeXpLogger
+import com.cso.coffeexp.testutil.FakePhotoStorage
 import com.cso.coffeexp.testutil.coffeeFixture
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -24,10 +29,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import coffeexp.shared.generated.resources.Res
-import coffeexp.shared.generated.resources.error_unknown
-import coffeexp.shared.generated.resources.message_load_empty
-import coffeexp.shared.generated.resources.message_load_error
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewCoffeeViewModelTest {
@@ -45,7 +46,10 @@ class NewCoffeeViewModelTest {
 
     @Test
     fun `form actions update expansion brewing method and rating`() = runTest {
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository())
+        val viewModel = NewCoffeeViewModel(
+            FakeCoffeeXpLogger(), FakeCoffeeRepository(),
+            FakePhotoStorage()
+        )
 
         viewModel.state.test {
             awaitItem()
@@ -60,7 +64,7 @@ class NewCoffeeViewModelTest {
     fun `selecting existing coffee fills every form field`() = runTest {
         val coffee = coffeeFixture(id = 21L)
         val repository = FakeCoffeeRepository().apply { coffeeById = coffee }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -97,7 +101,7 @@ class NewCoffeeViewModelTest {
     @Test
     fun `selecting missing coffee shows empty load issue and keeps form empty`() = runTest {
         val repository = FakeCoffeeRepository()
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -122,7 +126,7 @@ class NewCoffeeViewModelTest {
         val repository = FakeCoffeeRepository().apply {
             getCoffeeByIdResult = Result.Failure(DataError.Local.UNKNOWN)
         }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -146,7 +150,8 @@ class NewCoffeeViewModelTest {
 
     @Test
     fun `save starts disabled`() = runTest {
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository())
+        val viewModel =
+            NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository(), FakePhotoStorage())
 
         viewModel.state.test {
             assertFalse(awaitItem().isSaveEnabled)
@@ -156,7 +161,8 @@ class NewCoffeeViewModelTest {
 
     @Test
     fun `save becomes enabled when all required fields are filled`() = runTest {
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository())
+        val viewModel =
+            NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository(), FakePhotoStorage())
 
         viewModel.state.test {
             val state = awaitItem()
@@ -175,7 +181,8 @@ class NewCoffeeViewModelTest {
 
     @Test
     fun `save becomes disabled when a required field is cleared`() = runTest {
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository())
+        val viewModel =
+            NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository(), FakePhotoStorage())
 
         viewModel.state.test {
             val state = awaitItem()
@@ -200,7 +207,7 @@ class NewCoffeeViewModelTest {
     fun `selecting existing coffee enables save when required fields are filled`() = runTest {
         val coffee = coffeeFixture(id = 22L)
         val repository = FakeCoffeeRepository().apply { coffeeById = coffee }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             assertFalse(awaitItem().isSaveEnabled)
@@ -222,7 +229,7 @@ class NewCoffeeViewModelTest {
     fun `save converts current form state and calls repository`() = runTest {
         val coffee = coffeeFixture(id = 31L)
         val repository = FakeCoffeeRepository().apply { coffeeById = coffee }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -258,7 +265,7 @@ class NewCoffeeViewModelTest {
     fun `saving an edited coffee preserves its id`() = runTest {
         val coffee = coffeeFixture(id = 41L)
         val repository = FakeCoffeeRepository().apply { coffeeById = coffee }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -279,7 +286,7 @@ class NewCoffeeViewModelTest {
     fun `selecting roast date updates state and persists selection`() = runTest {
         val selectedDate = kotlinx.datetime.LocalDate(2026, 8, 1)
         val repository = FakeCoffeeRepository()
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -301,7 +308,7 @@ class NewCoffeeViewModelTest {
     fun `saving an edited coffee preserves its original created date`() = runTest {
         val original = coffeeFixture(id = 51L)
         val repository = FakeCoffeeRepository().apply { coffeeById = original }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -322,7 +329,7 @@ class NewCoffeeViewModelTest {
     fun `saving an edited coffee updates its last modified date`() = runTest {
         val original = coffeeFixture(id = 52L)
         val repository = FakeCoffeeRepository().apply { coffeeById = original }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -343,7 +350,11 @@ class NewCoffeeViewModelTest {
     fun `saving an edited coffee persists every changed field`() = runTest {
         val original = coffeeFixture(id = 51L)
         val repository = FakeCoffeeRepository().apply { coffeeById = original }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val changedPhotoUri = "file:///coffee/geisha.jpg"
+        val photoStorage = FakePhotoStorage().apply {
+            savePhotoResult = Result.Success(changedPhotoUri)
+        }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, photoStorage)
 
         viewModel.state.test {
             awaitItem()
@@ -365,8 +376,10 @@ class NewCoffeeViewModelTest {
             state.ratioState.replaceText("1:15")
             state.brewDuration.replaceText("02:45")
             state.tastingNotesState.replaceText("Jasmine and bergamot")
-            val changedPhotoUri = "file:///coffee/geisha.jpg"
-            viewModel.onAction(NewCoffeeAction.OnPhotoSelected(changedPhotoUri))
+
+            viewModel.onAction(NewCoffeeAction.OnPhotoBytesSelected(byteArrayOf(1, 2, 3)))
+            awaitItem()
+
             state.brewingMethod.replaceText("Chemex")
             awaitItem()
             viewModel.onAction(NewCoffeeAction.OnRatingChange(9.5))
@@ -398,6 +411,8 @@ class NewCoffeeViewModelTest {
             assertEquals("Jasmine and bergamot", saved.notes)
             assertEquals(original.createdAt, saved.createdAt)
             assertEquals(LocalDate(), saved.lastModifiedAt)
+
+            assertEquals(listOf(original.imageUrl), photoStorage.deletedPaths)
         }
     }
 
@@ -406,7 +421,7 @@ class NewCoffeeViewModelTest {
         val repository = FakeCoffeeRepository().apply {
             upsertResult = Result.Failure(DataError.Local.UNKNOWN)
         }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -432,7 +447,7 @@ class NewCoffeeViewModelTest {
         val repository = FakeCoffeeRepository().apply {
             upsertResult = Result.Failure(DataError.Local.UNKNOWN)
         }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()
@@ -456,7 +471,7 @@ class NewCoffeeViewModelTest {
         val repository = FakeCoffeeRepository().apply {
             upsertResult = Result.Failure(DataError.Local.UNKNOWN)
         }
-        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository)
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
             awaitItem()

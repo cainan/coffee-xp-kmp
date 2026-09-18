@@ -69,6 +69,8 @@ kotlin {
 
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
+
+            implementation(libs.filekit.dialogs.compose)
         }
         val commonTest by getting {
             dependencies {

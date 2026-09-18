@@ -6,10 +6,11 @@ import com.cso.coffeexp.core.error_handling.Result
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
 import com.cso.coffeexp.domain.model.Coffee
 import com.cso.coffeexp.domain.repository.CoffeeRepository
+import com.cso.coffeexp.domain.repository.PhotoStorage
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.datetime.LocalDate
 
 class FakeCoffeeRepository(
@@ -91,3 +92,17 @@ fun coffeeFixture(
     createdAt = LocalDate(2026, 7, 20),
     lastModifiedAt = LocalDate(2026, 7, 25),
 )
+
+class FakePhotoStorage : PhotoStorage {
+    var savePhotoResult: Result<String, DataError.Local> =
+        Result.Success("/fake/coffee_photos/photo.jpg")
+    val deletedPaths = mutableListOf<String>()
+
+    override suspend fun savePhoto(bytes: ByteArray): Result<String, DataError.Local> =
+        savePhotoResult
+
+    override suspend fun deletePhoto(path: String): EmptyResult<DataError.Local> {
+        deletedPaths += path
+        return Result.Success(Unit)
+    }
+}
