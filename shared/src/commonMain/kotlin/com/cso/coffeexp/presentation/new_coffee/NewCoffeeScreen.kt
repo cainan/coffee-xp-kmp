@@ -82,6 +82,7 @@ import com.cso.coffeexp.core.design_system.components.PhotoPickerBottomSheet
 import com.cso.coffeexp.core.design_system.components.PhotoUploadBox
 import com.cso.coffeexp.core.design_system.components.SectionHeader
 import com.cso.coffeexp.core.design_system.components.StarRating
+import com.cso.coffeexp.core.design_system.components.rememberCameraLauncherOrNull
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.core.design_system.utils.ObserveAsEvents
 import com.cso.coffeexp.core.design_system.utils.UiText
@@ -108,10 +109,22 @@ fun NewCoffeeRoot(
             viewModel.onAction(NewCoffeeAction.OnPhotoPickerError(error.message))
         },
         onResult = { file ->
-            // file == null quando o usuário cancela
             if (file != null) {
                 scope.launch {
                     viewModel.onAction(NewCoffeeAction.OnPhotoBytesSelected(file.readBytes()))
+                }
+            }
+        }
+    )
+
+    val cameraLauncher = rememberCameraLauncherOrNull(
+        onError = { message ->
+            viewModel.onAction(NewCoffeeAction.OnPhotoPickerError(message))
+        },
+        onResult = { platformFile ->
+            platformFile?.let {
+                scope.launch {
+                    viewModel.onAction(NewCoffeeAction.OnPhotoBytesSelected(it.readBytes()))
                 }
             }
         }
@@ -133,10 +146,15 @@ fun NewCoffeeRoot(
 
     NewCoffeeScreen(
         state = state,
+        isCameraSupported = cameraLauncher != null,
         onAction = { action ->
             when (action) {
                 is NewCoffeeAction.OnBackClick -> onBackClick()
                 is NewCoffeeAction.OnFromGalleryClick -> galleryLauncher.launch()
+                is NewCoffeeAction.OnTakePhotoClick -> {
+                    cameraLauncher?.invoke()
+                }
+
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -149,18 +167,17 @@ fun NewCoffeeRoot(
 fun NewCoffeeScreen(
     state: NewCoffeeState,
     onAction: (NewCoffeeAction) -> Unit,
+    isCameraSupported: Boolean,
 ) {
 
     if (state.isPhotoPickerSheetOpen) {
         PhotoPickerBottomSheet(
             onDismissRequest = { onAction(NewCoffeeAction.OnDismissPhotoPickerSheet) },
-            onTakePhotoClick = {
-                // TODO
-            },
+            onTakePhotoClick = { onAction(NewCoffeeAction.OnTakePhotoClick) },
             onChooseFromGalleryClick = {
                 onAction(NewCoffeeAction.OnFromGalleryClick)
             },
-            isCameraSupported = true,
+            isCameraSupported = isCameraSupported,
             onRemovePhotoClick = if (state.photoUri != null) {
                 { onAction(NewCoffeeAction.OnRemovePhotoClick) }
             } else null
@@ -395,9 +412,10 @@ private fun NewCoffeePreview() {
                 temperatureState = TextFieldState("94"),
                 ratioState = TextFieldState("1:16"),
                 brewDuration = TextFieldState("3:15 min"),
-                overallRating = 4.0
+                overallRating = 4.0,
             ),
-            onAction = {}
+            onAction = {},
+            isCameraSupported = false,
         )
     }
 }
@@ -410,7 +428,8 @@ private fun NewCoffeeLoadingErrorPreview() {
             state = NewCoffeeState(
                 loadIssue = UiText.Resource(Res.string.message_load_error)
             ),
-            onAction = {}
+            onAction = {},
+            isCameraSupported = false,
         )
     }
 }
@@ -430,7 +449,8 @@ private fun NewCoffeeErrorSavingPreview() {
                 overallRating = 4.0,
                 errorMessage = UiText.Resource(Res.string.error_disk_full)
             ),
-            onAction = {}
+            onAction = {},
+            isCameraSupported = false,
         )
     }
 }

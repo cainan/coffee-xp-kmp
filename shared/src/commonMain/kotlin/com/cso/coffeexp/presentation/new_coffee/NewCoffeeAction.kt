@@ -10,9 +10,9 @@ sealed interface NewCoffeeAction {
     data object OnDismissPhotoPickerSheet : NewCoffeeAction
     data object OnFromGalleryClick : NewCoffeeAction
     data class OnPhotoPickerError(val message: String?) : NewCoffeeAction
-
     data class OnPhotoBytesSelected(val bytes: ByteArray) : NewCoffeeAction
     data object OnRemovePhotoClick : NewCoffeeAction
+    data object OnTakePhotoClick : NewCoffeeAction
     data class OnRatingChange(val rating: Double) : NewCoffeeAction
     data class OnRoastDateSelected(val date: LocalDate) : NewCoffeeAction
     data object OnSaveClick : NewCoffeeAction

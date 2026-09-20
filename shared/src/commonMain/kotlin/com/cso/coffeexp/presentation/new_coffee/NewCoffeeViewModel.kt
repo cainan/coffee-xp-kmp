@@ -116,7 +116,7 @@ class NewCoffeeViewModel(
             }
 
             NewCoffeeAction.OnBackClick -> Unit // handled by Root
-
+            NewCoffeeAction.OnTakePhotoClick -> Unit // handled by Root
         }
     }
 
