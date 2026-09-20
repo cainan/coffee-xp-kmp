@@ -18,8 +18,8 @@ import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 @Composable
 fun CoffeeXpTopBar(
     title: String,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onBackClick: (() -> Unit)? = null,
     backContentDescription: String? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
@@ -32,11 +32,13 @@ fun CoffeeXpTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = backContentDescription
-                )
+            onBackClick?.let {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = backContentDescription
+                    )
+                }
             }
         },
         actions = actions
@@ -51,6 +53,16 @@ private fun CoffeeXpTopBarPreview() {
             title = "Coffee Xp",
             onBackClick = {},
             backContentDescription = "Back"
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CoffeeXpTopBarPreviewWithoutBack() {
+    CoffeeXpTheme {
+        CoffeeXpTopBar(
+            title = "Coffee Xp",
         )
     }
 }

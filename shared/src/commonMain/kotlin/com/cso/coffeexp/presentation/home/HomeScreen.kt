@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -47,6 +46,7 @@ import coffeexp.shared.generated.resources.home_my_brews
 import coffeexp.shared.generated.resources.home_search_placeholder
 import coffeexp.shared.generated.resources.home_undo
 import com.cso.coffeexp.core.design_system.components.CoffeeXpSearchBar
+import com.cso.coffeexp.core.design_system.components.CoffeeXpTopBar
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.core.design_system.utils.ObserveAsEvents
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
@@ -133,8 +133,8 @@ fun HomeScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(stringResource(Res.string.app_name)) }
+            CoffeeXpTopBar(
+                title = stringResource(Res.string.app_name)
             )
         },
         snackbarHost = {
