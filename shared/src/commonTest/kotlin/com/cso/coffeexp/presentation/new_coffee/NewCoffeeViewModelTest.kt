@@ -494,6 +494,122 @@ class NewCoffeeViewModelTest {
         }
     }
 
+    @Test
+    fun `picking a photo stores it and exposes the saved path`() = runTest {
+        val photoStorage = FakePhotoStorage().apply {
+            savePhotoResult = Result.Success("/photos/a.jpg")
+        }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository(), photoStorage)
+
+        viewModel.state.test {
+            assertNull(awaitItem().photoUri)
+
+            viewModel.onAction(NewCoffeeAction.OnPhotoBytesSelected(byteArrayOf(1, 2, 3)))
+
+            assertEquals("/photos/a.jpg", awaitItem().photoUri)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertTrue(photoStorage.deletedPaths.isEmpty())
+    }
+
+    @Test
+    fun `failed photo storage shows error and keeps the photo empty`() = runTest {
+        val photoStorage = FakePhotoStorage().apply {
+            savePhotoResult = Result.Failure(DataError.Local.UNKNOWN)
+        }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository(), photoStorage)
+
+        viewModel.state.test {
+            awaitItem()
+
+            viewModel.onAction(NewCoffeeAction.OnPhotoBytesSelected(byteArrayOf(1, 2, 3)))
+
+            val failedState = awaitItem()
+            assertNull(failedState.photoUri)
+            val errorMessage = failedState.errorMessage as UiText.Resource
+            assertEquals(Res.string.error_unknown, errorMessage.id)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `replacing a photo deletes the previous session photo`() = runTest {
+        val photoStorage = FakePhotoStorage().apply {
+            savePhotoResult = Result.Success("/photos/a.jpg")
+        }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository(), photoStorage)
+
+        viewModel.state.test {
+            awaitItem()
+
+            viewModel.onAction(NewCoffeeAction.OnPhotoBytesSelected(byteArrayOf(1)))
+            assertEquals("/photos/a.jpg", awaitItem().photoUri)
+
+            photoStorage.savePhotoResult = Result.Success("/photos/b.jpg")
+            viewModel.onAction(NewCoffeeAction.OnPhotoBytesSelected(byteArrayOf(2)))
+            assertEquals("/photos/b.jpg", awaitItem().photoUri)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(listOf("/photos/a.jpg"), photoStorage.deletedPaths)
+    }
+
+    @Test
+    fun `removing a photo clears the state and deletes the file`() = runTest {
+        val photoStorage = FakePhotoStorage().apply {
+            savePhotoResult = Result.Success("/photos/a.jpg")
+        }
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), FakeCoffeeRepository(), photoStorage)
+
+        viewModel.state.test {
+            awaitItem()
+
+            viewModel.onAction(NewCoffeeAction.OnPhotoBytesSelected(byteArrayOf(1)))
+            assertEquals("/photos/a.jpg", awaitItem().photoUri)
+
+            viewModel.onAction(NewCoffeeAction.OnRemovePhotoClick)
+            assertNull(awaitItem().photoUri)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(listOf("/photos/a.jpg"), photoStorage.deletedPaths)
+    }
+
+    @Test
+    fun `original photo is only deleted after the coffee is saved`() = runTest {
+        val original = coffeeFixture(id = 61L)
+        val repository = FakeCoffeeRepository().apply { coffeeById = original }
+        val photoStorage = FakePhotoStorage()
+        val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, photoStorage)
+
+        viewModel.state.test {
+            awaitItem()
+            viewModel.onAction(NewCoffeeAction.OnCoffeeToEditSelected(61L))
+            var loadedState = awaitItem()
+            while (loadedState.isLoading) {
+                loadedState = awaitItem()
+            }
+            assertEquals(original.imageUrl, loadedState.photoUri)
+
+            viewModel.onAction(NewCoffeeAction.OnRemovePhotoClick)
+            assertNull(awaitItem().photoUri)
+            assertTrue(photoStorage.deletedPaths.isEmpty())
+
+            viewModel.events.test {
+                viewModel.onAction(NewCoffeeAction.OnSaveClick)
+                assertEquals(NewCoffeeEvent.AddedSuccessfully, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        assertEquals(listOf(original.imageUrl), photoStorage.deletedPaths)
+        assertNull(repository.upsertedCoffees.single().imageUrl)
+    }
+
     private fun TextFieldState.replaceText(value: String) {
         edit { replace(0, length, value) }
     }
