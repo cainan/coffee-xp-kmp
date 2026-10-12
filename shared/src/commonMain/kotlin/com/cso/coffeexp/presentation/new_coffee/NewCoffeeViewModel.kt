@@ -226,7 +226,7 @@ class NewCoffeeViewModel(
 
     private fun saveCoffee() {
 
-        if (_state.value.isSaving || _state.value.coffeeNameState.text.isEmpty()
+        if (_state.value.isSaving || _state.value.coffeeNameState.text.isBlank()
         ) {
             return
         }
