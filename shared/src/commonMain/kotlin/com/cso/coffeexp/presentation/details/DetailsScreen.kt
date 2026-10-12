@@ -259,7 +259,7 @@ private fun CoffeeDetailSection(
             }
 
             FinalAssessmentCard(
-                rating = (coffeeDetails.rating / 2),
+                rating = (coffeeDetails.rating),
                 notes = coffeeDetails.notes
             )
 
