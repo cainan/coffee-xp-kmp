@@ -58,11 +58,7 @@ class NewCoffeeViewModel(
     private fun observeIfCanSave() {
         snapshotFlow {
             val current = _state.value
-            current.coffeeNameState.text.isNotBlank() &&
-                    current.roasterState.text.isNotBlank() &&
-                    current.originState.text.isNotBlank() &&
-                    current.roastLevelState.text.isNotBlank() &&
-                    current.brewingMethod.text.isNotBlank()
+            current.coffeeNameState.text.isNotBlank()
         }
             .distinctUntilChanged()
             .onEach { canSave ->
@@ -185,9 +181,7 @@ class NewCoffeeViewModel(
 
                         current.coffeeNameState.replaceText(coffeeToEdit.name)
                         current.roasterState.replaceText(coffeeToEdit.roaster)
-                        current.seriesCollectionState.replaceText(coffeeToEdit.series.orEmpty())
                         current.originState.replaceText(coffeeToEdit.origin)
-                        current.processState.replaceText(coffeeToEdit.process.orEmpty())
                         current.elevationState.replaceText(coffeeToEdit.elevation.orEmpty())
                         current.roastLevelState.replaceText(coffeeToEdit.roastLevel)
                         current.brewingMethod.replaceText(coffeeToEdit.brewingMethod)
@@ -221,15 +215,19 @@ class NewCoffeeViewModel(
         }
     }
 
-    private fun TextFieldState.replaceText(value: String) {
+    private fun TextFieldState.replaceText(value: String?) {
         edit {
-            replace(0, length, value)
+            replace(0, length, value ?: "")
         }
     }
 
+    fun String.toOptionalText(): String? =
+        trim().takeIf { it.isNotEmpty() }
+
     private fun saveCoffee() {
 
-        if (_state.value.isSaving) {
+        if (_state.value.isSaving || _state.value.coffeeNameState.text.isEmpty()
+        ) {
             return
         }
 
@@ -242,27 +240,23 @@ class NewCoffeeViewModel(
                 )
             }
 
-            // TODO validate fields
-
             coffeeRepository.upsertCoffee(
                 coffee = Coffee(
                     id = _state.value.coffeeId,
                     imageUrl = _state.value.photoUri,
                     name = _state.value.coffeeNameState.text.toString().trim(),
-                    roaster = _state.value.roasterState.text.toString().trim(),
-                    series = _state.value.seriesCollectionState.text.toString().trim(),
-                    origin = _state.value.originState.text.toString().trim(),
-                    process = _state.value.processState.text.toString().trim(),
-                    elevation = _state.value.elevationState.text.toString().trim(),
+                    roaster = _state.value.roasterState.text.toString().toOptionalText(),
+                    origin = _state.value.originState.text.toString().toOptionalText(),
+                    elevation = _state.value.elevationState.text.toString().toOptionalText(),
                     roastDate = _state.value.roastDate,
-                    roastLevel = _state.value.roastLevelState.text.toString().trim(),
-                    brewingMethod = _state.value.brewingMethod.text.toString().trim(),
-                    grindSize = _state.value.grindSizeState.text.toString().trim(),
-                    temperature = _state.value.temperatureState.text.toString().trim(),
-                    ratio = _state.value.ratioState.text.toString().trim(),
-                    brewTime = _state.value.brewDuration.text.toString().trim(),
+                    roastLevel = _state.value.roastLevelState.text.toString().toOptionalText(),
+                    brewingMethod = _state.value.brewingMethod.text.toString().toOptionalText(),
+                    grindSize = _state.value.grindSizeState.text.toString().toOptionalText(),
+                    temperature = _state.value.temperatureState.text.toString().toOptionalText(),
+                    ratio = _state.value.ratioState.text.toString().toOptionalText(),
+                    brewTime = _state.value.brewDuration.text.toString().toOptionalText(),
                     rating = _state.value.overallRating,
-                    notes = _state.value.tastingNotesState.text.toString().trim(),
+                    notes = _state.value.tastingNotesState.text.toString().toOptionalText(),
                     createdAt = _state.value.createdAt ?: LocalDate(),
                     lastModifiedAt = LocalDate()
                 )

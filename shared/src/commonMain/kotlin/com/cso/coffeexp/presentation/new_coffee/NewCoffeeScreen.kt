@@ -53,8 +53,6 @@ import coffeexp.shared.generated.resources.new_coffee_notes_placeholder
 import coffeexp.shared.generated.resources.new_coffee_origin_label
 import coffeexp.shared.generated.resources.new_coffee_origin_placeholder
 import coffeexp.shared.generated.resources.new_coffee_overall_rating
-import coffeexp.shared.generated.resources.new_coffee_process_label
-import coffeexp.shared.generated.resources.new_coffee_process_placeholder
 import coffeexp.shared.generated.resources.new_coffee_ratio_label
 import coffeexp.shared.generated.resources.new_coffee_roast_date_label
 import coffeexp.shared.generated.resources.new_coffee_roast_date_placeholder
@@ -63,8 +61,6 @@ import coffeexp.shared.generated.resources.new_coffee_roast_level_placeholder
 import coffeexp.shared.generated.resources.new_coffee_roaster_label
 import coffeexp.shared.generated.resources.new_coffee_roaster_placeholder
 import coffeexp.shared.generated.resources.new_coffee_save_button
-import coffeexp.shared.generated.resources.new_coffee_series_label
-import coffeexp.shared.generated.resources.new_coffee_series_placeholder
 import coffeexp.shared.generated.resources.new_coffee_tasting_notes
 import coffeexp.shared.generated.resources.new_coffee_temperature_label
 import coffeexp.shared.generated.resources.new_coffee_temperature_suffix
@@ -280,19 +276,9 @@ private fun NewCoffeeForm(
                     placeholder = stringResource(Res.string.new_coffee_roaster_placeholder)
                 )
                 CoffeeXpUnderlinedField(
-                    label = stringResource(Res.string.new_coffee_series_label),
-                    state = state.seriesCollectionState,
-                    placeholder = stringResource(Res.string.new_coffee_series_placeholder)
-                )
-                CoffeeXpUnderlinedField(
                     label = stringResource(Res.string.new_coffee_origin_label),
                     state = state.originState,
                     placeholder = stringResource(Res.string.new_coffee_origin_placeholder)
-                )
-                CoffeeXpUnderlinedField(
-                    label = stringResource(Res.string.new_coffee_process_label),
-                    state = state.processState,
-                    placeholder = stringResource(Res.string.new_coffee_process_placeholder)
                 )
                 CoffeeXpUnderlinedField(
                     label = stringResource(Res.string.new_coffee_elevation_label),

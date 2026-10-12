@@ -58,7 +58,6 @@ import coffeexp.shared.generated.resources.details_journal_entry
 import coffeexp.shared.generated.resources.details_logged_on
 import coffeexp.shared.generated.resources.details_method_label
 import coffeexp.shared.generated.resources.details_origin_label
-import coffeexp.shared.generated.resources.details_process_label
 import coffeexp.shared.generated.resources.details_ratio_label
 import coffeexp.shared.generated.resources.details_roast_date_label
 import coffeexp.shared.generated.resources.details_roast_level_label
@@ -199,7 +198,7 @@ private fun CoffeeDetailSection(
     ) {
         CoffeeHeroHeader(
             imageUrl = coffeeDetails.imageUrl,
-            eyebrow = coffeeDetails.series,
+            eyebrow = null,
             title = coffeeDetails.name,
             subtitle = coffeeDetails.roaster,
             imageContentDescription = coffeeDetails.name
@@ -286,13 +285,13 @@ private fun CoffeeDetailSection(
 
                     InfoRow(
                         label = stringResource(Res.string.details_origin_label),
-                        value = coffeeDetails.origin
+                        value = coffeeDetails.origin.orDash()
                     )
 
-                    InfoRow(
-                        label = stringResource(Res.string.details_process_label),
-                        value = coffeeDetails.process.orDash()
-                    )
+//                    InfoRow(
+//                        label = stringResource(Res.string.details_process_label),
+//                        value = coffeeDetails.process.orDash()
+//                    )
 
                     InfoRow(
                         label = stringResource(Res.string.details_elevation_label),
@@ -301,7 +300,7 @@ private fun CoffeeDetailSection(
 
                     InfoRow(
                         label = stringResource(Res.string.details_roast_date_label),
-                        value = coffeeDetails.roastDate.toFormattedDateString()
+                        value = coffeeDetails.roastDate.toFormattedDateString().orDash()
                     )
 
                 }

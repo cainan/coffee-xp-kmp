@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8cc8a2e8a31c4a5fcc5c9c0d93585bb3",
+    "identityHash": "39d035d7ac71f268ad32d2b8c45d4871",
     "entities": [
       {
         "tableName": "coffee",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `imageUrl` TEXT, `name` TEXT NOT NULL, `roaster` TEXT NOT NULL, `series` TEXT, `origin` TEXT NOT NULL, `process` TEXT, `elevation` TEXT, `roastDate` TEXT NOT NULL, `roastLevel` TEXT NOT NULL, `brewingMethod` TEXT NOT NULL, `grindSize` TEXT, `temperature` TEXT, `ratio` TEXT, `brewTime` TEXT, `rating` REAL NOT NULL, `notes` TEXT, `createdAt` TEXT NOT NULL, `lastModifiedAt` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `imageUrl` TEXT, `name` TEXT NOT NULL, `roaster` TEXT, `origin` TEXT, `elevation` TEXT, `roastDate` TEXT NOT NULL, `roastLevel` TEXT, `brewingMethod` TEXT, `grindSize` TEXT, `temperature` TEXT, `ratio` TEXT, `brewTime` TEXT, `rating` REAL NOT NULL, `notes` TEXT, `createdAt` TEXT NOT NULL, `lastModifiedAt` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -28,23 +28,11 @@
           {
             "fieldPath": "roaster",
             "columnName": "roaster",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "series",
-            "columnName": "series",
             "affinity": "TEXT"
           },
           {
             "fieldPath": "origin",
             "columnName": "origin",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "process",
-            "columnName": "process",
             "affinity": "TEXT"
           },
           {
@@ -61,14 +49,12 @@
           {
             "fieldPath": "roastLevel",
             "columnName": "roastLevel",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "brewingMethod",
             "columnName": "brewingMethod",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "grindSize",
@@ -124,7 +110,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8cc8a2e8a31c4a5fcc5c9c0d93585bb3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '39d035d7ac71f268ad32d2b8c45d4871')"
     ]
   }
 }

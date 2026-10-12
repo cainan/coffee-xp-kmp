@@ -20,8 +20,6 @@ class CoffeeMapperTest {
     fun `toCoffee preserves null optional entity fields`() {
         val entity = coffeeEntity(
             imageUrl = null,
-            series = null,
-            process = null,
             elevation = null,
             grindSize = null,
             temperature = null,
@@ -33,8 +31,6 @@ class CoffeeMapperTest {
         val coffee = entity.toCoffee()
 
         assertEquals(null, coffee.imageUrl)
-        assertEquals(null, coffee.series)
-        assertEquals(null, coffee.process)
         assertEquals(null, coffee.elevation)
         assertEquals(null, coffee.grindSize)
         assertEquals(null, coffee.temperature)
@@ -55,8 +51,6 @@ class CoffeeMapperTest {
         val coffee = coffee(
             id = null,
             imageUrl = null,
-            series = null,
-            process = null,
             elevation = null,
             grindSize = null,
             temperature = null,
@@ -69,8 +63,6 @@ class CoffeeMapperTest {
 
         assertEquals(0, entity.id)
         assertEquals(null, entity.imageUrl)
-        assertEquals(null, entity.series)
-        assertEquals(null, entity.process)
         assertEquals(null, entity.elevation)
         assertEquals(null, entity.grindSize)
         assertEquals(null, entity.temperature)
@@ -82,8 +74,6 @@ class CoffeeMapperTest {
     private fun coffee(
         id: Long? = 42,
         imageUrl: String? = "https://example.com/coffee.jpg",
-        series: String? = "Microlot Series",
-        process: String? = "Natural",
         elevation: String? = "1,200m",
         grindSize: String? = "Medium-fine",
         temperature: String? = "93°C",
@@ -95,9 +85,7 @@ class CoffeeMapperTest {
         imageUrl = imageUrl,
         name = "Yellow Bourbon",
         roaster = "Coffee XP Roasters",
-        series = series,
         origin = "Brazil",
-        process = process,
         elevation = elevation,
         roastDate = ROAST_DATE,
         roastLevel = "Medium",
@@ -115,8 +103,6 @@ class CoffeeMapperTest {
     private fun coffeeEntity(
         id: Long = 42,
         imageUrl: String? = "https://example.com/coffee.jpg",
-        series: String? = "Microlot Series",
-        process: String? = "Natural",
         elevation: String? = "1,200m",
         grindSize: String? = "Medium-fine",
         temperature: String? = "93°C",
@@ -128,9 +114,7 @@ class CoffeeMapperTest {
         imageUrl = imageUrl,
         name = "Yellow Bourbon",
         roaster = "Coffee XP Roasters",
-        series = series,
         origin = "Brazil",
-        process = process,
         elevation = elevation,
         roastDate = ROAST_DATE.toEpochMillisString(),
         roastLevel = "Medium",

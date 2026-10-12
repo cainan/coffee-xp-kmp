@@ -34,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coffeexp.shared.generated.resources.Res
@@ -210,7 +211,10 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(stringResource(Res.string.home_empty_state))
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = stringResource(Res.string.home_empty_state)
+                    )
                 }
             } else {
                 LazyColumn(

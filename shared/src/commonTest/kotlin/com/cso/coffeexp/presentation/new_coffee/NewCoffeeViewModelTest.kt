@@ -81,9 +81,7 @@ class NewCoffeeViewModelTest {
             assertEquals(coffee.imageUrl, loadedState.photoUri)
             assertEquals(coffee.name, loadedState.coffeeNameState.text.toString())
             assertEquals(coffee.roaster, loadedState.roasterState.text.toString())
-            assertEquals(coffee.series, loadedState.seriesCollectionState.text.toString())
             assertEquals(coffee.origin, loadedState.originState.text.toString())
-            assertEquals(coffee.process, loadedState.processState.text.toString())
             assertEquals(coffee.elevation, loadedState.elevationState.text.toString())
             assertEquals(coffee.roastDate, loadedState.roastDate)
             assertEquals(coffee.roastLevel, loadedState.roastLevelState.text.toString())
@@ -195,7 +193,7 @@ class NewCoffeeViewModelTest {
             Snapshot.sendApplyNotifications()
             assertTrue(awaitItem().isSaveEnabled)
 
-            state.originState.replaceText("   ")
+            state.coffeeNameState.replaceText("   ")
             Snapshot.sendApplyNotifications()
 
             assertFalse(awaitItem().isSaveEnabled)
@@ -247,9 +245,7 @@ class NewCoffeeViewModelTest {
         assertEquals(coffee.imageUrl, saved.imageUrl)
         assertEquals(coffee.name, saved.name)
         assertEquals(coffee.roaster, saved.roaster)
-        assertEquals(coffee.series, saved.series)
         assertEquals(coffee.origin, saved.origin)
-        assertEquals(coffee.process, saved.process)
         assertEquals(coffee.elevation, saved.elevation)
         assertEquals(coffee.roastLevel, saved.roastLevel)
         assertEquals(coffee.brewingMethod, saved.brewingMethod)
@@ -289,9 +285,14 @@ class NewCoffeeViewModelTest {
         val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
-            awaitItem()
+            val initialState = awaitItem()
+            initialState.coffeeNameState.replaceText("Geisha")
+            Snapshot.sendApplyNotifications()
             viewModel.onAction(NewCoffeeAction.OnRoastDateSelected(selectedDate))
-            assertEquals(selectedDate, awaitItem().roastDate)
+            var selectedState = awaitItem()
+            while (selectedState.roastDate != selectedDate) {
+                selectedState = awaitItem()
+            }
 
             viewModel.events.test {
                 viewModel.onAction(NewCoffeeAction.OnSaveClick)
@@ -363,9 +364,7 @@ class NewCoffeeViewModelTest {
 
             state.coffeeNameState.replaceText("Geisha")
             state.roasterState.replaceText("New Roaster")
-            state.seriesCollectionState.replaceText("Competition Lot")
             state.originState.replaceText("Panama")
-            state.processState.replaceText("Washed")
             state.elevationState.replaceText("1,800m")
             val changedRoastDate = kotlinx.datetime.LocalDate(2026, 8, 1)
             viewModel.onAction(NewCoffeeAction.OnRoastDateSelected(changedRoastDate))
@@ -396,9 +395,7 @@ class NewCoffeeViewModelTest {
             assertEquals(changedPhotoUri, saved.imageUrl)
             assertEquals("Geisha", saved.name)
             assertEquals("New Roaster", saved.roaster)
-            assertEquals("Competition Lot", saved.series)
             assertEquals("Panama", saved.origin)
-            assertEquals("Washed", saved.process)
             assertEquals("1,800m", saved.elevation)
             assertEquals(changedRoastDate, saved.roastDate)
             assertEquals("Light", saved.roastLevel)
@@ -424,7 +421,8 @@ class NewCoffeeViewModelTest {
         val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
-            awaitItem()
+            val initialState = awaitItem()
+            initialState.coffeeNameState.replaceText("Geisha")
 
             viewModel.events.test {
                 viewModel.onAction(NewCoffeeAction.OnSaveClick)
@@ -450,9 +448,13 @@ class NewCoffeeViewModelTest {
         val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
-            awaitItem()
+            val initialState = awaitItem()
+            initialState.coffeeNameState.replaceText("Geisha")
             viewModel.onAction(NewCoffeeAction.OnSaveClick)
-            assertTrue(awaitItem().errorMessage != null)
+            var failedState = awaitItem()
+            while (failedState.errorMessage == null) {
+                failedState = awaitItem()
+            }
 
             repository.upsertBarrier = CompletableDeferred()
             viewModel.onAction(NewCoffeeAction.OnSaveClick)
@@ -474,9 +476,13 @@ class NewCoffeeViewModelTest {
         val viewModel = NewCoffeeViewModel(FakeCoffeeXpLogger(), repository, FakePhotoStorage())
 
         viewModel.state.test {
-            awaitItem()
+            val initialState = awaitItem()
+            initialState.coffeeNameState.replaceText("Geisha")
             viewModel.onAction(NewCoffeeAction.OnSaveClick)
-            assertTrue(awaitItem().errorMessage != null)
+            var failedState = awaitItem()
+            while (failedState.errorMessage == null) {
+                failedState = awaitItem()
+            }
 
             repository.upsertResult = Result.Success(1L)
             viewModel.events.test {

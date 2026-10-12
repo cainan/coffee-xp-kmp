@@ -116,15 +116,13 @@ private fun RatingBadge(
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
-            text = formatStarRating(rating),
+            text = rating.toString(),
             style = MaterialTheme.typography.labelSmall,
             color = Color.White
         )
     }
 }
 
-// coffee.rating is 0-10; the badge shows the derived 0-5 star value. Avoids
-// String.format, which isn't available in commonMain (JVM-only stdlib API).
 private fun formatStarRating(rating: Double): String {
     val roundedTenths = round(rating / 2 * 10).toInt()
     val whole = roundedTenths / 10

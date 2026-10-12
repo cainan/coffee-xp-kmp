@@ -47,7 +47,7 @@ class HomeViewModel(
             coffeeList = coffees.filter { coffee ->
                 coffee.id !in hiddenIds && (query.isBlank() ||
                         coffee.name.contains(query, ignoreCase = true) ||
-                        coffee.roaster.contains(query, ignoreCase = true))
+                        coffee.roaster?.contains(query, ignoreCase = true) == true)
             },
             searchQuery = query,
         )

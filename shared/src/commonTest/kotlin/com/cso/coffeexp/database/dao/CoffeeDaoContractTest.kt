@@ -33,8 +33,6 @@ abstract class CoffeeDaoContractTest {
     fun `upsert inserts a coffee and getById returns all fields`() = runTest {
         val coffee = coffeeEntity(
             imageUrl = null,
-            series = null,
-            process = null,
             elevation = null,
             grindSize = null,
             temperature = null,
@@ -95,9 +93,7 @@ abstract class CoffeeDaoContractTest {
         imageUrl: String? = "https://example.com/coffee.jpg",
         name: String = "Test coffee",
         roaster: String = "Test roaster",
-        series: String? = "Test series",
         origin: String = "Brazil",
-        process: String? = "Natural",
         elevation: String? = "1,200m",
         roastDate: String = "10",
         roastLevel: String = "Medium",
@@ -115,9 +111,7 @@ abstract class CoffeeDaoContractTest {
         imageUrl = imageUrl,
         name = name,
         roaster = roaster,
-        series = series,
         origin = origin,
-        process = process,
         elevation = elevation,
         roastDate = roastDate,
         roastLevel = roastLevel,

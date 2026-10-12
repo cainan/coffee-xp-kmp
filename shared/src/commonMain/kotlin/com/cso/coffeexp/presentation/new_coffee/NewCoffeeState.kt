@@ -17,9 +17,7 @@ data class NewCoffeeState(
     val isPhotoPickerSheetOpen: Boolean = false,
     val coffeeNameState: TextFieldState = TextFieldState(),
     val roasterState: TextFieldState = TextFieldState(),
-    val seriesCollectionState: TextFieldState = TextFieldState(),
     val originState: TextFieldState = TextFieldState(),
-    val processState: TextFieldState = TextFieldState(),
     val elevationState: TextFieldState = TextFieldState(),
     val roastDate: LocalDate = LocalDate(),
     val roastLevelState: TextFieldState = TextFieldState(),
@@ -28,7 +26,7 @@ data class NewCoffeeState(
     val temperatureState: TextFieldState = TextFieldState(),
     val ratioState: TextFieldState = TextFieldState(),
     val brewDuration: TextFieldState = TextFieldState(),
-    val overallRating: Double = 0.0,
+    val overallRating: Double = 5.0,
     val tastingNotesState: TextFieldState = TextFieldState(),
 
     val createdAt: LocalDate? = null,
