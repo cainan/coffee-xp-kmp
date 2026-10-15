@@ -154,6 +154,10 @@ class NewCoffeeViewModel(
 
     private fun onCoffeeToEditSelected(coffeeId: Long) {
 
+        if (_state.value.coffeeId == coffeeId) {
+            return // This Coffee is already in edit mode, no reload necessary
+        }
+
         _state.update {
             it.copy(
                 isLoading = true,
