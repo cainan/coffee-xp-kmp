@@ -10,15 +10,13 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
+import androidx.compose.ui.tooling.preview.Preview
+import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,11 +34,7 @@ fun CoffeeXpSearchBar(
         )
     },
     trailingIcon: @Composable (() -> Unit)? = null,
-//    supportingContent: (@Composable (String) -> Unit)? = null,
-//    leadingContent: (@Composable () -> Unit)? = null,
 ) {
-    // Track expanded state of search bar
-    var expanded by rememberSaveable { mutableStateOf(false) }
 
     Box(
         modifier
@@ -49,6 +43,7 @@ fun CoffeeXpSearchBar(
     ) {
         SearchBar(
             modifier = Modifier
+                .fillMaxWidth()
                 .align(Alignment.TopCenter)
                 .semantics { traversalIndex = 0f },
             inputField = {
@@ -58,37 +53,31 @@ fun CoffeeXpSearchBar(
                     onQueryChange = onQueryChange,
                     onSearch = {
                         onSearch(query)
-                        expanded = false
                     },
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
+                    expanded = false,
+                    onExpandedChange = { },
                     placeholder = placeholder,
                     leadingIcon = leadingIcon,
                     trailingIcon = trailingIcon
                 )
             },
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
+            expanded = false,
+            onExpandedChange = { },
         ) {
-//            // Show search results in a lazy column for better performance
-//            LazyColumn {
-//                items(count = searchResults.size) { index ->
-//                    val resultText = searchResults[index]
-//                    ListItem(
-//                        headlineContent = { Text(resultText) },
-//                        supportingContent = supportingContent?.let { { it(resultText) } },
-//                        leadingContent = leadingContent,
-//                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-//                        modifier = Modifier
-//                            .clickable {
-//                                onResultClick(resultText)
-//                                expanded = false
-//                            }
-//                            .fillMaxWidth()
-//                            .padding(horizontal = 16.dp, vertical = 4.dp)
-//                    )
-//                }
-//            }
+
         }
+    }
+}
+
+@Preview
+@Composable
+private fun CoffeeXpSearchBarPreview() {
+    CoffeeXpTheme {
+        CoffeeXpSearchBar(
+            query = "",
+            onQueryChange = {},
+            onSearch = {},
+            placeholder = { Text("Buscar cafés") },
+        )
     }
 }

@@ -5,13 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,7 +40,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coffeexp.shared.generated.resources.Res
 import coffeexp.shared.generated.resources.app_name
 import coffeexp.shared.generated.resources.cd_add_new_coffee
-import coffeexp.shared.generated.resources.cd_more_options
 import coffeexp.shared.generated.resources.cd_search
 import coffeexp.shared.generated.resources.home_empty_state
 import coffeexp.shared.generated.resources.home_my_brews
@@ -190,13 +189,7 @@ fun HomeScreen(
                         contentDescription = stringResource(Res.string.cd_search)
                     )
                 },
-                trailingIcon = {
-                    Icon(
-                        Icons.Default.MoreVert,
-                        contentDescription = stringResource(Res.string.cd_more_options)
-                    )
-                },
-                modifier = Modifier.padding(top = CoffeeXpTheme.spacing.stackSm)
+                modifier = Modifier.fillMaxWidth().padding(top = CoffeeXpTheme.spacing.stackSm)
             )
 
             if (state.isLoading) {
