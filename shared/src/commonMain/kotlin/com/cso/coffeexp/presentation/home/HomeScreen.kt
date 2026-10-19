@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coffeexp.shared.generated.resources.Res
 import coffeexp.shared.generated.resources.app_name
@@ -50,6 +53,7 @@ import com.cso.coffeexp.core.design_system.components.CoffeeXpTopBar
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.core.design_system.utils.ObserveAsEvents
 import com.cso.coffeexp.domain.logger.CoffeeXpLogger
+import com.cso.coffeexp.domain.mock.mockCoffeeList
 import com.cso.coffeexp.presentation.components.SwipeToDeleteCoffeeBox
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -171,12 +175,17 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .padding(horizontal = CoffeeXpTheme.spacing.marginMobile)
+
         ) {
+
+            Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base))
+
             Text(
                 text = stringResource(Res.string.home_my_brews),
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base)
             )
+
+            Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base))
 
             CoffeeXpSearchBar(
                 query = state.searchQuery,
@@ -189,7 +198,7 @@ fun HomeScreen(
                         contentDescription = stringResource(Res.string.cd_search)
                     )
                 },
-                modifier = Modifier.fillMaxWidth().padding(top = CoffeeXpTheme.spacing.stackSm)
+                modifier = Modifier.fillMaxWidth()
             )
 
             if (state.isLoading) {
@@ -210,9 +219,12 @@ fun HomeScreen(
                     )
                 }
             } else {
+
+                Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.gutter))
+
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = CoffeeXpTheme.spacing.gutter),
+                    contentPadding = PaddingValues(bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.gutter),
                     state = listState
                 ) {
@@ -229,6 +241,7 @@ fun HomeScreen(
                             modifier = Modifier.animateItem()
                         )
                     }
+
                 }
             }
         }
@@ -237,10 +250,10 @@ fun HomeScreen(
 
 @Preview
 @Composable
-private fun Preview() {
+private fun HomeScreenPreview() {
     CoffeeXpTheme {
         HomeScreen(
-            state = HomeState(),
+            state = HomeState(coffeeList = mockCoffeeList),
             snackbarHostState = SnackbarHostState(),
             onAction = {},
         )

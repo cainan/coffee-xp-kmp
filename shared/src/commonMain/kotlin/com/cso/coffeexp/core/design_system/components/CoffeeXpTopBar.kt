@@ -28,7 +28,7 @@ fun CoffeeXpTopBar(
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.displayMedium
             )
         },
         navigationIcon = {
