@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
@@ -145,9 +146,10 @@ fun HomeScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                onAction(HomeAction.OnNewCoffeeClick)
-            }) {
+            FloatingActionButton(
+                onClick = { onAction(HomeAction.OnNewCoffeeClick) },
+                shape = CircleShape,
+            ) {
                 Icon(
                     Icons.Filled.Add,
                     contentDescription = stringResource(Res.string.cd_add_new_coffee)

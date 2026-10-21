@@ -37,47 +37,47 @@ private fun plusJakartaSansFamily(): FontFamily = FontFamily(
 // title/body/label -> sans.
 @Composable
 fun appTypography(): Typography {
-    val serif = libreCaslonTextFamily()
+    val caslon = libreCaslonTextFamily()
     val sans = plusJakartaSansFamily()
 
     return Typography(
         displayLarge = TextStyle(
-            fontFamily = serif,
+            fontFamily = caslon,
             fontWeight = FontWeight.Bold,
             fontSize = 40.sp,
             lineHeight = 48.sp,
             letterSpacing = (-0.02).em,
         ),
         displayMedium = TextStyle(
-            fontFamily = serif,
+            fontFamily = caslon,
             fontWeight = FontWeight.Bold,
             fontSize = 32.sp,
             lineHeight = 38.sp,
             letterSpacing = 0.sp,
         ),
         displaySmall = TextStyle(
-            fontFamily = serif,
+            fontFamily = caslon,
             fontWeight = FontWeight.Bold,
             fontSize = 28.sp,
             lineHeight = 34.sp,
             letterSpacing = 0.sp,
         ),
         headlineLarge = TextStyle(
-            fontFamily = serif,
+            fontFamily = caslon,
             fontWeight = FontWeight.SemiBold,
             fontSize = 26.sp,
             lineHeight = 32.sp,
             letterSpacing = 0.sp,
         ),
         headlineMedium = TextStyle(
-            fontFamily = serif,
+            fontFamily = caslon,
             fontWeight = FontWeight.SemiBold,
             fontSize = 24.sp,
             lineHeight = 32.sp,
             letterSpacing = 0.sp,
         ),
         headlineSmall = TextStyle(
-            fontFamily = serif,
+            fontFamily = caslon,
             fontWeight = FontWeight.SemiBold,
             fontSize = 20.sp,
             lineHeight = 28.sp,

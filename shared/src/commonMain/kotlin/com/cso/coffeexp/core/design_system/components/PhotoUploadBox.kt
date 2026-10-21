@@ -1,6 +1,7 @@
 package com.cso.coffeexp.core.design_system.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,8 +37,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.new_coffee_placeholder
 import coil3.compose.AsyncImage
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun PhotoUploadBox(
@@ -102,6 +106,17 @@ fun PhotoUploadBox(
                 }
             }
         } else {
+            Image(
+                painter = painterResource(Res.drawable.new_coffee_placeholder),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.82f))
+            )
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val strokeWidthPx = 1.5.dp.toPx()
                 drawRoundRect(

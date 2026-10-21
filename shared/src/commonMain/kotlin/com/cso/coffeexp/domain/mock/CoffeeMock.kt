@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDate
 
 val mockCoffee = Coffee(
     id = 1,
-    imageUrl = "https://picsum.photos/seed/yirgacheffe/400/300",
+    imageUrl = null,
     name = "Ethiopian Yirgacheffe",
     roaster = "Onyx Coffee Lab",
 //    series = "Ethical Harvest Series",

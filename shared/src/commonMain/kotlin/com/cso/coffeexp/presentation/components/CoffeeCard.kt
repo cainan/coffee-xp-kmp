@@ -1,5 +1,6 @@
 package com.cso.coffeexp.presentation.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,11 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coffeexp.shared.generated.resources.Res
 import coffeexp.shared.generated.resources.cd_coffee_rating
+import coffeexp.shared.generated.resources.coffee_card_placeholder
 import coil3.compose.AsyncImage
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.core.design_system.theme.PillShape
 import com.cso.coffeexp.domain.mock.mockCoffeeList
 import com.cso.coffeexp.domain.model.Coffee
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 import kotlin.math.round
@@ -48,23 +50,32 @@ fun CoffeeCard(
         modifier = modifier
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         onClick = {
             onClick(coffee)
         }
     ) {
-        Column {
+        Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(256.dp)
             ) {
-                AsyncImage(
-                    model = coffee.imageUrl,
-                    contentDescription = coffee.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
+                if (coffee.imageUrl.isNullOrBlank()) {
+                    Image(
+                        painter = painterResource(Res.drawable.coffee_card_placeholder),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    AsyncImage(
+                        model = coffee.imageUrl,
+                        contentDescription = coffee.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
                 RatingBadge(
                     rating = coffee.rating,
                     modifier = Modifier
@@ -77,6 +88,7 @@ fun CoffeeCard(
                 Text(
                     text = coffee.name,
                     style = MaterialTheme.typography.headlineSmall
+
                 )
                 if (!coffee.notes.isNullOrBlank()) {
                     Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base))
