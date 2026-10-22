@@ -40,6 +40,7 @@ import coffeexp.shared.generated.resources.date_picker_confirm
 import coffeexp.shared.generated.resources.error_disk_full
 import coffeexp.shared.generated.resources.message_load_error
 import coffeexp.shared.generated.resources.new_coffee_brewing_method_label
+import coffeexp.shared.generated.resources.new_coffee_brewing_method_placeholder
 import coffeexp.shared.generated.resources.new_coffee_brewing_specs
 import coffeexp.shared.generated.resources.new_coffee_capture_moment_subtitle
 import coffeexp.shared.generated.resources.new_coffee_capture_moment_title
@@ -48,12 +49,14 @@ import coffeexp.shared.generated.resources.new_coffee_coffee_name_placeholder
 import coffeexp.shared.generated.resources.new_coffee_elevation_label
 import coffeexp.shared.generated.resources.new_coffee_elevation_placeholder
 import coffeexp.shared.generated.resources.new_coffee_grind_size_label
+import coffeexp.shared.generated.resources.new_coffee_grind_size_placeholder
 import coffeexp.shared.generated.resources.new_coffee_grind_size_suffix
 import coffeexp.shared.generated.resources.new_coffee_notes_placeholder
 import coffeexp.shared.generated.resources.new_coffee_origin_label
 import coffeexp.shared.generated.resources.new_coffee_origin_placeholder
 import coffeexp.shared.generated.resources.new_coffee_overall_rating
 import coffeexp.shared.generated.resources.new_coffee_ratio_label
+import coffeexp.shared.generated.resources.new_coffee_ratio_placeholder
 import coffeexp.shared.generated.resources.new_coffee_roast_date_label
 import coffeexp.shared.generated.resources.new_coffee_roast_date_placeholder
 import coffeexp.shared.generated.resources.new_coffee_roast_level_label
@@ -63,9 +66,12 @@ import coffeexp.shared.generated.resources.new_coffee_roaster_placeholder
 import coffeexp.shared.generated.resources.new_coffee_save_button
 import coffeexp.shared.generated.resources.new_coffee_tasting_notes
 import coffeexp.shared.generated.resources.new_coffee_temperature_label
+import coffeexp.shared.generated.resources.new_coffee_temperature_placeholder
 import coffeexp.shared.generated.resources.new_coffee_temperature_suffix
 import coffeexp.shared.generated.resources.new_coffee_the_beans
 import coffeexp.shared.generated.resources.new_coffee_total_time_label
+import coffeexp.shared.generated.resources.new_coffee_total_time_placeholder
+import coffeexp.shared.generated.resources.new_coffee_total_time_suffix
 import coffeexp.shared.generated.resources.new_coffee_visual_identity
 import com.cso.coffeexp.core.design_system.components.CoffeeXpCard
 import com.cso.coffeexp.core.design_system.components.CoffeeXpDatePickerField
@@ -312,28 +318,39 @@ private fun NewCoffeeForm(
                 verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackSm)
             ) {
                 CoffeeXpFilledField(
-                    label = stringResource(Res.string.new_coffee_brewing_method_label),
                     state = state.brewingMethod,
+                    label = stringResource(Res.string.new_coffee_brewing_method_label),
+                    placeholder = stringResource(Res.string.new_coffee_brewing_method_placeholder),
+                    maxLength = 50,
                     keyboardType = KeyboardType.Text
                 )
                 CoffeeXpFilledField(
-                    label = stringResource(Res.string.new_coffee_grind_size_label),
                     state = state.grindSizeState,
+                    label = stringResource(Res.string.new_coffee_grind_size_label),
+                    placeholder = stringResource(Res.string.new_coffee_grind_size_placeholder),
                     suffix = stringResource(Res.string.new_coffee_grind_size_suffix),
+                    maxLength = 20,
                     keyboardType = KeyboardType.Number
                 )
                 CoffeeXpFilledField(
-                    label = stringResource(Res.string.new_coffee_temperature_label),
                     state = state.temperatureState,
+                    label = stringResource(Res.string.new_coffee_temperature_label),
+                    placeholder = stringResource(Res.string.new_coffee_temperature_placeholder),
                     suffix = stringResource(Res.string.new_coffee_temperature_suffix),
+                    maxLength = 20,
                     keyboardType = KeyboardType.Number
                 )
                 CoffeeXpFilledField(
                     label = stringResource(Res.string.new_coffee_ratio_label),
+                    placeholder = stringResource(Res.string.new_coffee_ratio_placeholder),
+                    maxLength = 20,
                     state = state.ratioState
                 )
                 CoffeeXpFilledField(
                     label = stringResource(Res.string.new_coffee_total_time_label),
+                    placeholder = stringResource(Res.string.new_coffee_total_time_placeholder),
+                    maxLength = 20,
+                    suffix = stringResource(Res.string.new_coffee_total_time_suffix),
                     state = state.brewDuration
                 )
             }

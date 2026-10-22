@@ -4,8 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,7 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 
 @Composable
@@ -24,6 +30,9 @@ fun CoffeeXpFilledField(
     state: TextFieldState,
     modifier: Modifier = Modifier,
     suffix: String? = null,
+    lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
+    maxLength: Int? = null,
+    placeholder: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -36,12 +45,17 @@ fun CoffeeXpFilledField(
         TextField(
             state = state,
             modifier = Modifier.fillMaxWidth(),
+            lineLimits = lineLimits,
             shape = MaterialTheme.shapes.medium,
+            placeholder = placeholder?.let { { Text(it) } },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            inputTransformation = maxLength?.let { InputTransformation.maxLength(maxLength) },
             trailingIcon = suffix?.let {
                 {
                     Text(
                         text = it,
+                        modifier = Modifier.padding(end = 16.dp),
+                        textAlign = TextAlign.End,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -65,6 +79,19 @@ private fun CoffeeXpFilledFieldPreview() {
         CoffeeXpFilledField(
             label = "Grind Size",
             state = rememberTextFieldState("24"),
+            suffix = "CLICKS"
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CoffeeXpFilledFieldEmptyPreview() {
+    CoffeeXpTheme {
+        CoffeeXpFilledField(
+            label = "Grind Size",
+            state = rememberTextFieldState(),
+            placeholder = "24",
             suffix = "CLICKS"
         )
     }
