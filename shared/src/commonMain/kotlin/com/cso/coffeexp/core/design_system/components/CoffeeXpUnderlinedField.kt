@@ -3,8 +3,10 @@ package com.cso.coffeexp.core.design_system.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +26,7 @@ fun CoffeeXpUnderlinedField(
     modifier: Modifier = Modifier,
     placeholder: String? = null,
     lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
+    maxLength: Int? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -37,6 +40,7 @@ fun CoffeeXpUnderlinedField(
             modifier = Modifier.fillMaxWidth(),
             placeholder = placeholder?.let { { Text(it) } },
             lineLimits = lineLimits,
+            inputTransformation = maxLength?.let { InputTransformation.maxLength(maxLength) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,

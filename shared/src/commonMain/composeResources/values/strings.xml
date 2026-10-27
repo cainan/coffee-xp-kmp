@@ -56,7 +56,7 @@
     <string name="new_coffee_brewing_method_placeholder">e.g. French press</string>
     <string name="new_coffee_grind_size_label">Grind Size</string>
     <string name="new_coffee_grind_size_placeholder">e.g. 24</string>
-    <string name="new_coffee_grind_size_suffix">CLICKS</string>
+    <string name="new_coffee_grind_size_suffix">Clicks</string>
     <string name="new_coffee_temperature_label">Temperature</string>
     <string name="new_coffee_temperature_placeholder">e.g. 95</string>
     <string name="new_coffee_temperature_suffix">°C</string>

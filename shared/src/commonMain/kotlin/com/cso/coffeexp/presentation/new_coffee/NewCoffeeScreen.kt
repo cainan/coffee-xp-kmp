@@ -12,10 +12,10 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.HourglassBottom
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Save
+import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -192,7 +192,7 @@ fun NewCoffeeScreen(
             CoffeeXpTopBar(
                 title = stringResource(Res.string.app_name),
                 onBackClick = { onAction(NewCoffeeAction.OnBackClick) },
-                backContentDescription = stringResource(Res.string.cd_back)
+                backContentDescription = stringResource(Res.string.cd_back),
             )
         }
     ) { innerPadding ->
@@ -264,7 +264,7 @@ private fun NewCoffeeForm(
 
         CoffeeXpCard {
             SectionHeader(
-                icon = Icons.Filled.Info,
+                icon = Icons.Outlined.Info,
                 title = stringResource(Res.string.new_coffee_the_beans)
             )
             Column(
@@ -274,21 +274,25 @@ private fun NewCoffeeForm(
                 CoffeeXpUnderlinedField(
                     label = stringResource(Res.string.new_coffee_coffee_name_label),
                     state = state.coffeeNameState,
+                    maxLength = 70,
                     placeholder = stringResource(Res.string.new_coffee_coffee_name_placeholder)
                 )
                 CoffeeXpUnderlinedField(
                     label = stringResource(Res.string.new_coffee_roaster_label),
                     state = state.roasterState,
+                    maxLength = 50,
                     placeholder = stringResource(Res.string.new_coffee_roaster_placeholder)
                 )
                 CoffeeXpUnderlinedField(
                     label = stringResource(Res.string.new_coffee_origin_label),
                     state = state.originState,
+                    maxLength = 50,
                     placeholder = stringResource(Res.string.new_coffee_origin_placeholder)
                 )
                 CoffeeXpUnderlinedField(
                     label = stringResource(Res.string.new_coffee_elevation_label),
                     state = state.elevationState,
+                    maxLength = 50,
                     placeholder = stringResource(Res.string.new_coffee_elevation_placeholder)
                 )
                 CoffeeXpDatePickerField(
@@ -303,6 +307,7 @@ private fun NewCoffeeForm(
                 CoffeeXpUnderlinedField(
                     label = stringResource(Res.string.new_coffee_roast_level_label),
                     state = state.roastLevelState,
+                    maxLength = 50,
                     placeholder = stringResource(Res.string.new_coffee_roast_level_placeholder)
                 )
             }
@@ -310,7 +315,7 @@ private fun NewCoffeeForm(
 
         CoffeeXpCard {
             SectionHeader(
-                icon = Icons.Filled.HourglassBottom,
+                icon = Icons.Outlined.Science,
                 title = stringResource(Res.string.new_coffee_brewing_specs)
             )
             Column(
@@ -395,7 +400,7 @@ private fun NewCoffeeForm(
         CoffeeXpPrimaryButton(
             text = stringResource(Res.string.new_coffee_save_button),
             onClick = { onAction(NewCoffeeAction.OnSaveClick) },
-            icon = Icons.Filled.Save,
+            icon = Icons.Outlined.Save,
             isLoading = state.isSaving,
             modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base),
             enabled = state.isSaveEnabled && !state.isSaving
