@@ -19,9 +19,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.outlined.Coffee
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.HistoryEdu
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Scale
@@ -137,7 +137,7 @@ fun DetailsScreen(
                             onClick = { onAction(DetailsAction.OnEditClick(coffeeId)) }
                         ) {
                             Icon(
-                                imageVector = Icons.Filled.Edit,
+                                imageVector = Icons.Outlined.Edit,
                                 contentDescription = stringResource(Res.string.cd_edit_coffee),
                                 modifier = Modifier.padding(end = 4.dp)
                             )
