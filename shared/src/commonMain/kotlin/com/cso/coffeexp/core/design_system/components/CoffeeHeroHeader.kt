@@ -1,5 +1,6 @@
 package com.cso.coffeexp.core.design_system.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +18,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.coffee_card_placeholder
 import coil3.compose.AsyncImage
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun CoffeeHeroHeader(
@@ -38,20 +43,30 @@ fun CoffeeHeroHeader(
             .fillMaxWidth()
             .height(height)
     ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = imageContentDescription,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        if (imageUrl.isNullOrBlank()) {
+            Image(
+                painter = painterResource(Res.drawable.coffee_card_placeholder),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = imageContentDescription,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
                         0f to Color.Transparent,
-                        0.45f to Color.Transparent,
-                        1f to Color.Black.copy(alpha = 0.85f),
+                        0.60f to Color.Transparent,
+                        0.85f to MaterialTheme.colorScheme.background.copy(alpha = 0.35f),
+                        1f to MaterialTheme.colorScheme.background,
                     )
                 )
         )
@@ -64,21 +79,27 @@ fun CoffeeHeroHeader(
                 Text(
                     text = eyebrow,
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.White.copy(alpha = 0.85f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
             Text(
                 text = title,
                 style = MaterialTheme.typography.displaySmall,
-                color = Color.White
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.primary
             )
             if (subtitle != null) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.titleMedium.copy(fontStyle = FontStyle.Italic),
-                    color = Color.White.copy(alpha = 0.9f)
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontStyle = FontStyle.Italic
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
             }
         }

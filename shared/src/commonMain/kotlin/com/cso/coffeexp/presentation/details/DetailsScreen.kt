@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,21 +12,22 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Article
-import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Thermostat
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material.icons.outlined.Coffee
+import androidx.compose.material.icons.outlined.HistoryEdu
+import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material.icons.outlined.Scale
+import androidx.compose.material.icons.outlined.Thermostat
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,9 +43,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coffeexp.shared.generated.resources.Res
 import coffeexp.shared.generated.resources.app_name
@@ -222,36 +227,36 @@ private fun CoffeeDetailSection(
                 )
                 BrewProfileRow(
                     first = Triple(
-                        Icons.Filled.Coffee,
+                        Icons.Outlined.Coffee,
                         stringResource(Res.string.details_method_label),
                         coffeeDetails.brewingMethod.orDash()
                     ),
                     second = Triple(
-                        Icons.Filled.WaterDrop,
+                        Icons.Outlined.Scale,
                         stringResource(Res.string.details_ratio_label),
                         coffeeDetails.ratio.orDash()
                     )
                 )
                 BrewProfileRow(
                     first = Triple(
-                        Icons.Filled.Timer,
+                        Icons.Outlined.Timer,
                         stringResource(Res.string.details_total_time_label),
                         coffeeDetails.brewTime.orDash()
                     ),
                     second = Triple(
-                        Icons.Filled.Thermostat,
+                        Icons.Outlined.Thermostat,
                         stringResource(Res.string.details_temp_label),
                         coffeeDetails.temperature.orDash()
                     )
                 )
                 BrewProfileRow(
                     first = Triple(
-                        Icons.Filled.Tune,
+                        Icons.Outlined.Tune,
                         stringResource(Res.string.details_grind_size_label),
                         coffeeDetails.grindSize.orDash()
                     ),
                     second = Triple(
-                        Icons.Filled.LocalFireDepartment,
+                        Icons.Outlined.LocalFireDepartment,
                         stringResource(Res.string.details_roast_level_label),
                         coffeeDetails.roastLevel.orDash()
                     )
@@ -264,23 +269,24 @@ private fun CoffeeDetailSection(
             )
 
             CoffeeXpCard {
-                Row(verticalAlignment = Alignment.Top) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Article,
+                        imageVector = Icons.Outlined.HistoryEdu,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp)
                     )
                     Spacer(modifier = Modifier.width(CoffeeXpTheme.spacing.base))
                     Text(
                         text = stringResource(Res.string.details_user_logged_info),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Column(
-                    modifier = Modifier.padding(top = CoffeeXpTheme.spacing.stackSm),
-                    verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackSm)
+                    modifier = Modifier.padding(top = CoffeeXpTheme.spacing.stackMd),
+                    verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)
                 ) {
 
                     InfoRow(
@@ -355,24 +361,24 @@ private fun FinalAssessmentCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.primary),
     ) {
         Icon(
-            imageVector = Icons.Filled.Star,
+            imageVector = Icons.Filled.StarBorder,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.08f),
+            tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.10f),
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(CoffeeXpTheme.spacing.base)
-                .size(96.dp)
+                .offset(x = 20.dp, y = (-20).dp)
+                .size(130.dp)
         )
-        Column(modifier = Modifier.padding(CoffeeXpTheme.spacing.gutter)) {
+        Column(modifier = Modifier.padding(CoffeeXpTheme.spacing.stackMd)) {
             Text(
                 text = stringResource(Res.string.details_final_assessment),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f)
             )
-            Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base))
+            Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.stackMd))
             StarRating(
                 rating = rating,
                 showValue = true,
@@ -382,24 +388,30 @@ private fun FinalAssessmentCard(
             )
 
             if (!notes.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.stackSm))
+                Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.stackMd))
                 Text(
                     text = stringResource(Res.string.details_journal_entry),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f)
                 )
-                Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base))
-                Row {
+                Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.gutter))
+                Row(modifier = Modifier.height(IntrinsicSize.Min)) {
                     Box(
                         modifier = Modifier
                             .width(3.dp)
                             .fillMaxHeight()
-                            .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f))
+                            .background(
+                                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
+                            )
                     )
-                    Spacer(modifier = Modifier.width(CoffeeXpTheme.spacing.base))
+                    Spacer(modifier = Modifier.width(CoffeeXpTheme.spacing.gutter))
                     Text(
-                        text = notes.orDash(),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
+                        text = "\"${notes.orDash()}\"",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            lineHeight = 39.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic
+                        ),
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
