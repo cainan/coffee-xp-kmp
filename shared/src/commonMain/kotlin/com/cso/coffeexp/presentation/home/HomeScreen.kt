@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,10 +18,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -46,7 +45,6 @@ import coffeexp.shared.generated.resources.app_name
 import coffeexp.shared.generated.resources.cd_add_new_coffee
 import coffeexp.shared.generated.resources.cd_search
 import coffeexp.shared.generated.resources.home_empty_state
-import coffeexp.shared.generated.resources.home_my_brews
 import coffeexp.shared.generated.resources.home_search_placeholder
 import coffeexp.shared.generated.resources.home_undo
 import com.cso.coffeexp.core.design_system.components.CoffeeXpSearchBar
@@ -128,7 +126,6 @@ fun HomeRoot(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     state: HomeState,
@@ -175,19 +172,10 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
                 .fillMaxSize()
                 .padding(horizontal = CoffeeXpTheme.spacing.marginMobile)
-
         ) {
-
-            Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base))
-
-            Text(
-                text = stringResource(Res.string.home_my_brews),
-                style = MaterialTheme.typography.headlineMedium,
-            )
-
-            Spacer(modifier = Modifier.height(CoffeeXpTheme.spacing.base))
 
             CoffeeXpSearchBar(
                 query = state.searchQuery,

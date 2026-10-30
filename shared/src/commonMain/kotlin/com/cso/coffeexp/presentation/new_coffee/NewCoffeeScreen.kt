@@ -245,11 +245,11 @@ private fun NewCoffeeForm(
             .padding(bottom = CoffeeXpTheme.spacing.stackLg),
         verticalArrangement = Arrangement.spacedBy(CoffeeXpTheme.spacing.stackMd)
     ) {
-        Text(
-            text = stringResource(Res.string.new_coffee_visual_identity),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base)
-        )
+//        Text(
+//            text = stringResource(Res.string.new_coffee_visual_identity),
+//            style = MaterialTheme.typography.headlineMedium,
+//            modifier = Modifier.padding(top = CoffeeXpTheme.spacing.base)
+//        )
 
         PhotoUploadBox(
             title = stringResource(Res.string.new_coffee_capture_moment_title),
