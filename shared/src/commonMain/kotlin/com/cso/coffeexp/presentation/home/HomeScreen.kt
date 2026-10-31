@@ -15,8 +15,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Coffee
+import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -148,7 +149,7 @@ fun HomeScreen(
                 shape = CircleShape,
             ) {
                 Icon(
-                    Icons.Filled.Add,
+                    Icons.Outlined.LocalCafe,
                     contentDescription = stringResource(Res.string.cd_add_new_coffee)
                 )
             }
