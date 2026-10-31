@@ -25,6 +25,9 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.cso.coffeexp"
             packageVersion = "1.0.0"
+            macOS { iconFile.set(project.file("src/main/resources/coffee-xp-icon.icns")) }
+            windows { iconFile.set(project.file("src/main/resources/coffee-xp-icon.ico")) }
+            linux { iconFile.set(project.file("src/main/resources/coffee-xp-icon.png")) }
         }
     }
 }
