@@ -12,7 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.cd_search
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,11 +24,11 @@ fun CoffeeXpSearchBar(
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: @Composable () -> Unit = { Text("Search") },
+    placeholder: @Composable () -> Unit = { stringResource(Res.string.cd_search) },
     leadingIcon: @Composable (() -> Unit)? = {
         Icon(
             Icons.Default.Search,
-            contentDescription = "Search"
+            contentDescription = stringResource(Res.string.cd_search)
         )
     },
     trailingIcon: @Composable (() -> Unit)? = null,

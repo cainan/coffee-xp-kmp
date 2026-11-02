@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Coffee Xp</string>
+
+    <string name="home_my_brews">Meus cafés</string>
+    <string name="home_search_placeholder">Buscar registros anteriores…</string>
+    <string name="home_empty_state">Ainda não há cafés. Adicione um pelo botão +!</string>
+    <string name="home_coffee_deleted">%1$s excluído</string>
+    <string name="home_undo">Desfazer</string>
+
+    <string name="cd_search">Buscar</string>
+    <string name="cd_more_options">Mais opções</string>
+    <string name="cd_add_new_coffee">Adicionar café</string>
+    <string name="cd_remove_item">Remover item</string>
+    <string name="cd_coffee_rating">Avaliação</string>
+    <string name="cd_back">Voltar</string>
+    <string name="cd_upload_photo">Enviar foto</string>
+    <string name="cd_edit_photo">Editar foto</string>
+    <string name="cd_remove_photo">Remover foto</string>
+    <string name="date_picker_confirm">OK</string>
+    <string name="date_picker_cancel">Cancelar</string>
+
+    <string name="error_disk_full">Não há espaço de armazenamento suficiente para salvar este café.</string>
+    <string name="error_not_found">Não foi possível encontrar as informações solicitadas.</string>
+    <string name="error_connection">Verifique sua conexão e tente novamente.</string>
+    <string name="error_request_timeout">A solicitação demorou demais. Tente novamente.</string>
+    <string name="error_unauthorized">Você não tem permissão para concluir esta ação.</string>
+    <string name="error_server">O serviço está temporariamente indisponível. Tente novamente.</string>
+    <string name="error_unknown">Não foi possível salvar seu registro. Suas informações continuam aqui. Tente novamente.</string>
+    <string name="error_delete_failed">Não foi possível excluir este café. Tente novamente.</string>
+
+    <string name="message_try_again">Tentar novamente</string>
+    <string name="message_load_empty">Café não encontrado. Tente novamente…</string>
+    <string name="message_load_error">Erro ao carregar o café. Tente novamente…</string>
+
+    <string name="new_coffee_visual_identity">Identificação visual</string>
+    <string name="new_coffee_capture_moment_title">Registre o momento</string>
+    <string name="new_coffee_capture_moment_subtitle">Toque para enviar uma foto do pacote ou do preparo</string>
+    <string name="new_coffee_the_beans">O café</string>
+    <string name="new_coffee_coffee_name_label">Nome do café</string>
+    <string name="new_coffee_coffee_name_placeholder">ex.: Ethiopian Yirgacheffe</string>
+    <string name="new_coffee_roaster_label">Torrefação</string>
+    <string name="new_coffee_roaster_placeholder">ex.: Onyx Coffee Lab</string>
+    <string name="new_coffee_series_label">Série/Coleção</string>
+    <string name="new_coffee_series_placeholder">ex.: Série Colheita Ética</string>
+    <string name="new_coffee_origin_label">Origem</string>
+    <string name="new_coffee_origin_placeholder">ex.: Zona de Gedeo, Etiópia</string>
+    <string name="new_coffee_process_label">Processo</string>
+    <string name="new_coffee_process_placeholder">ex.: Lavado</string>
+    <string name="new_coffee_elevation_label">Altitude</string>
+    <string name="new_coffee_elevation_placeholder">ex.: 2.000 m</string>
+    <string name="new_coffee_roast_date_label">Data da torra</string>
+    <string name="new_coffee_roast_date_placeholder">dd/mm/aaaa</string>
+    <string name="new_coffee_roast_level_label">Nível da torra</string>
+    <string name="new_coffee_roast_level_placeholder">ex.: Média-escura</string>
+    <string name="new_coffee_brewing_specs">Parâmetros do preparo</string>
+    <string name="new_coffee_brewing_method_label">Método de preparo</string>
+    <string name="new_coffee_brewing_method_placeholder">ex.: Prensa francesa</string>
+    <string name="new_coffee_grind_size_label">Granulometria</string>
+    <string name="new_coffee_grind_size_placeholder">ex.: 24</string>
+    <string name="new_coffee_grind_size_suffix">cliques</string>
+    <string name="new_coffee_temperature_label">Temperatura</string>
+    <string name="new_coffee_temperature_placeholder">ex.: 95</string>
+    <string name="new_coffee_temperature_suffix">°C</string>
+    <string name="new_coffee_ratio_label">Proporção</string>
+    <string name="new_coffee_ratio_placeholder">ex.: 1:15</string>
+    <string name="new_coffee_total_time_label">Tempo total</string>
+    <string name="new_coffee_total_time_placeholder">ex.: 3:15</string>
+    <string name="new_coffee_total_time_suffix">minutos</string>
+    <string name="new_coffee_tasting_notes">Notas sensoriais</string>
+    <string name="new_coffee_overall_rating">AVALIAÇÃO GERAL</string>
+    <string name="new_coffee_notes_placeholder">Descreva o aroma, o corpo e a acidez…</string>
+    <string name="new_coffee_save_button">Salvar registro</string>
+
+    <string name="details_edit_button">Editar</string>
+    <string name="cd_edit_coffee">Editar café</string>
+    <string name="details_brew_profile">PERFIL DO PREPARO</string>
+    <string name="details_method_label">Método</string>
+    <string name="details_ratio_label">Proporção</string>
+    <string name="details_total_time_label">Tempo total</string>
+    <string name="details_temp_label">Temperatura</string>
+    <string name="details_grind_size_label">Granulometria</string>
+    <string name="details_roast_level_label">Nível da torra</string>
+    <string name="details_final_assessment">AVALIAÇÃO FINAL</string>
+    <string name="details_journal_entry">REGISTRO</string>
+    <string name="details_user_logged_info">DETALHES DE TORRA E ORIGEM</string>
+    <string name="details_origin_label">Origem</string>
+    <string name="details_process_label">Processo</string>
+    <string name="details_elevation_label">Altitude</string>
+    <string name="details_roast_date_label">Data da torra</string>
+    <string name="details_logged_on">Registrado em %1$s</string>
+
+    <string name="photo_picker_title">Foto do café</string>
+    <string name="photo_picker_take_photo">Tirar uma foto</string>
+    <string name="photo_picker_choose_gallery">Escolher da galeria</string>
+    <string name="photo_picker_remove_photo">Remover foto</string>
+</resources>

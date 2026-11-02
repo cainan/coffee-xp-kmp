@@ -73,7 +73,6 @@ import coffeexp.shared.generated.resources.new_coffee_the_beans
 import coffeexp.shared.generated.resources.new_coffee_total_time_label
 import coffeexp.shared.generated.resources.new_coffee_total_time_placeholder
 import coffeexp.shared.generated.resources.new_coffee_total_time_suffix
-import coffeexp.shared.generated.resources.new_coffee_visual_identity
 import com.cso.coffeexp.core.design_system.components.CoffeeXpCard
 import com.cso.coffeexp.core.design_system.components.CoffeeXpDatePickerField
 import com.cso.coffeexp.core.design_system.components.CoffeeXpFilledField

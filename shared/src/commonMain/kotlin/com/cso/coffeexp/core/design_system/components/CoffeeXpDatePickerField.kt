@@ -27,13 +27,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.zIndex
+import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.date_picker_cancel
+import coffeexp.shared.generated.resources.date_picker_confirm
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import com.cso.coffeexp.data.logger.KermitLogger
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,8 +50,8 @@ fun CoffeeXpDatePickerField(
     enabled: Boolean = true,
     minimumDate: LocalDate? = null,
     maximumDate: LocalDate? = null,
-    confirmText: String = "OK",
-    dismissText: String = "Cancel",
+    confirmText: String = stringResource(Res.string.date_picker_confirm),
+    dismissText: String = stringResource(Res.string.date_picker_cancel),
     dateFormatter: (LocalDate) -> String = LocalDate::toDayMonthYear,
 ) {
     var isDialogVisible by remember { mutableStateOf(false) }

@@ -38,10 +38,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coffeexp.shared.generated.resources.Res
+import coffeexp.shared.generated.resources.cd_edit_photo
+import coffeexp.shared.generated.resources.cd_remove_photo
 import coffeexp.shared.generated.resources.new_coffee_placeholder
 import coil3.compose.AsyncImage
 import com.cso.coffeexp.core.design_system.theme.CoffeeXpTheme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PhotoUploadBox(
@@ -86,7 +89,7 @@ fun PhotoUploadBox(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit photo"
+                        contentDescription = stringResource(Res.string.cd_edit_photo)
                     )
                 }
 
@@ -100,7 +103,7 @@ fun PhotoUploadBox(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
-                            contentDescription = "Remove photo"
+                            contentDescription = stringResource(Res.string.cd_remove_photo)
                         )
                     }
                 }
@@ -126,8 +129,14 @@ fun PhotoUploadBox(
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f), 0f)
                     ),
                     cornerRadius = CornerRadius(16.dp.toPx()),
-                    topLeft = androidx.compose.ui.geometry.Offset(strokeWidthPx / 2, strokeWidthPx / 2),
-                    size = androidx.compose.ui.geometry.Size(size.width - strokeWidthPx, size.height - strokeWidthPx)
+                    topLeft = androidx.compose.ui.geometry.Offset(
+                        strokeWidthPx / 2,
+                        strokeWidthPx / 2
+                    ),
+                    size = androidx.compose.ui.geometry.Size(
+                        size.width - strokeWidthPx,
+                        size.height - strokeWidthPx
+                    )
                 )
             }
             Column(
